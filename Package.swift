@@ -21,8 +21,13 @@ let package = Package(
             targets: ["BenchmarkKitSwiftUI"]
         )
     ],
+    dependencies: [
+        .package(path: "../swiftanvil-anvil-core"),
+    ],
     targets: [
-        .target(name: "BenchmarkKit"),
+        .target(name: "BenchmarkKit", dependencies: [
+            .product(name: "AnvilCore", package: "swiftanvil-anvil-core"),
+        ]),
         .target(
             name: "BenchmarkKitSwiftUI",
             dependencies: ["BenchmarkKit"]

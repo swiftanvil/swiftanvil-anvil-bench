@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import AnvilCore
 @testable import BenchmarkKit
 
 @Suite("BenchmarkKit primitives")
@@ -466,6 +467,51 @@ struct BenchmarkKitTests {
 
         #expect(measurement.value == "measured")
         #expect(measurement.elapsedSeconds == 0)
+    }
+
+    @Test("BenchmarkTaskRunner returns AnvilTask with BenchmarkResult")
+    func benchmarkTaskRunnerReturnsAnvilTask() async throws {
+        let runner = BenchmarkTaskRunner(recorder: NoOpBenchmarkRecorder(), measurer: NoOpBenchmarkMeasurer())
+        let descriptor = BenchmarkRunDescriptor(
+            suiteID: Fixture.suiteID,
+            scenarioID: Fixture.scenarioID
+        )
+
+        let task = try await runner.run(descriptor: descriptor) {
+            [
+                BenchmarkSampleDescriptor(
+                    suiteID: Fixture.suiteID,
+                    scenarioID: Fixture.scenarioID,
+                    metricID: Fixture.metricID,
+                    value: 100
+                )
+            ]
+        }
+
+        #expect(!task.id.uuidString.isEmpty)
+        #expect(task.label.contains("benchmark-"))
+
+        let result = try await task.value
+        #expect(result.run.suiteID == Fixture.suiteID)
+        #expect(result.run.scenarioID == Fixture.scenarioID)
+        #expect(result.samples.count == 1)
+        #expect(result.samples[0].value == 100)
+    }
+
+    @Test("BenchmarkTaskRunner uses WallClockBenchmarkMeasurer by default")
+    func benchmarkTaskRunnerUsesWallClock() async throws {
+        let runner = BenchmarkTaskRunner(recorder: NoOpBenchmarkRecorder())
+        let descriptor = BenchmarkRunDescriptor(
+            suiteID: Fixture.suiteID,
+            scenarioID: Fixture.scenarioID
+        )
+
+        let task = try await runner.run(descriptor: descriptor) {
+            []
+        }
+
+        let result = try await task.value
+        #expect(result.elapsedSeconds >= 0)
     }
 }
 
