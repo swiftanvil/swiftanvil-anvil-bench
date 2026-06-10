@@ -70,7 +70,7 @@ public struct BenchmarkScenarioStrictGates: Hashable, Codable, Sendable {
     /// Decodes and canonicalizes strict gate values.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.init(try container.decode([BenchmarkScenarioFingerprintValue].self, forKey: .values))
+        try self.init(container.decode([BenchmarkScenarioFingerprintValue].self, forKey: .values))
     }
 
     /// Returns the value for a dimension when present.
@@ -83,7 +83,9 @@ public struct BenchmarkScenarioStrictGates: Hashable, Codable, Sendable {
         !values.isEmpty && values == other.values
     }
 
-    private static func canonicalValues(from values: [BenchmarkScenarioFingerprintValue]) -> [BenchmarkScenarioFingerprintValue] {
+    private static func canonicalValues(from values: [BenchmarkScenarioFingerprintValue])
+        -> [BenchmarkScenarioFingerprintValue]
+    {
         let valuesByDimension = Dictionary(values.map { ($0.dimension, $0.value) }, uniquingKeysWith: { _, new in new })
         return valuesByDimension
             .map { dimension, value in BenchmarkScenarioFingerprintValue(dimension: dimension, value: value) }
@@ -124,7 +126,7 @@ public struct BenchmarkScenarioFuzzyBucket: Hashable, Codable, Sendable {
     /// Decodes and canonicalizes fuzzy bucket values.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.init(try container.decode([BenchmarkScenarioFingerprintValue].self, forKey: .values))
+        try self.init(container.decode([BenchmarkScenarioFingerprintValue].self, forKey: .values))
     }
 
     /// Returns the value for a dimension when present.
@@ -212,7 +214,9 @@ public struct BenchmarkScenario: Identifiable, Hashable, Codable, Sendable {
 }
 
 /// A metric unit represented by a stable raw string.
-public struct BenchmarkMetricUnit: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct BenchmarkMetricUnit: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral,
+    CustomStringConvertible
+{
     /// The persisted unit value.
     public let rawValue: String
 
@@ -312,7 +316,9 @@ public struct BenchmarkMetric: Identifiable, Hashable, Codable, Sendable {
 }
 
 /// A product or technical area associated with a performance change note.
-public struct BenchmarkPerformanceChangeArea: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct BenchmarkPerformanceChangeArea: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral,
+    CustomStringConvertible
+{
     /// The persisted area key.
     public let rawValue: String
 
@@ -621,25 +627,29 @@ public struct BenchmarkRun: Identifiable, Hashable, Codable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, suiteID, scenarioID, startedAt, endedAt, archiveState, tags, metadata, envelope, systemSummary, titleOverride, titleHash, scenarioFingerprint
+        case id, suiteID, scenarioID, startedAt, endedAt, archiveState, tags, metadata, envelope, systemSummary,
+             titleOverride, titleHash, scenarioFingerprint
     }
 
     /// Decodes a run; previously persisted runs without an envelope or title read back with those fields `nil`.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(ID.self, forKey: .id)
-        self.suiteID = try container.decode(BenchmarkSuite.ID.self, forKey: .suiteID)
-        self.scenarioID = try container.decode(BenchmarkScenario.ID.self, forKey: .scenarioID)
-        self.startedAt = try container.decode(Date.self, forKey: .startedAt)
-        self.endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
-        self.archiveState = try container.decode(BenchmarkArchiveState.self, forKey: .archiveState)
-        self.tags = try container.decode(Set<BenchmarkTag>.self, forKey: .tags)
-        self.metadata = try container.decode([String: String].self, forKey: .metadata)
-        self.envelope = try container.decodeIfPresent(BenchmarkEnvelope.self, forKey: .envelope)
-        self.systemSummary = try container.decodeIfPresent(BenchmarkSystemSummary.self, forKey: .systemSummary)
-        self.titleOverride = try container.decodeIfPresent(String.self, forKey: .titleOverride)
-        self.titleHash = try container.decodeIfPresent(String.self, forKey: .titleHash)
-        self.scenarioFingerprint = try container.decodeIfPresent(BenchmarkScenarioFingerprint.self, forKey: .scenarioFingerprint)
+        id = try container.decode(ID.self, forKey: .id)
+        suiteID = try container.decode(BenchmarkSuite.ID.self, forKey: .suiteID)
+        scenarioID = try container.decode(BenchmarkScenario.ID.self, forKey: .scenarioID)
+        startedAt = try container.decode(Date.self, forKey: .startedAt)
+        endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
+        archiveState = try container.decode(BenchmarkArchiveState.self, forKey: .archiveState)
+        tags = try container.decode(Set<BenchmarkTag>.self, forKey: .tags)
+        metadata = try container.decode([String: String].self, forKey: .metadata)
+        envelope = try container.decodeIfPresent(BenchmarkEnvelope.self, forKey: .envelope)
+        systemSummary = try container.decodeIfPresent(BenchmarkSystemSummary.self, forKey: .systemSummary)
+        titleOverride = try container.decodeIfPresent(String.self, forKey: .titleOverride)
+        titleHash = try container.decodeIfPresent(String.self, forKey: .titleHash)
+        scenarioFingerprint = try container.decodeIfPresent(
+            BenchmarkScenarioFingerprint.self,
+            forKey: .scenarioFingerprint
+        )
     }
 }
 

@@ -218,7 +218,10 @@ struct BenchmarkCohortTests {
         ])
 
         let match = try await snapshot.nearestPreviousComparableRun(before: reference)
-        let missingReference = try await snapshot.nearestPreviousComparableRun(before: run(id: "missing-reference", startedAt: 50))
+        let missingReference = try await snapshot.nearestPreviousComparableRun(before: run(
+            id: "missing-reference",
+            startedAt: 50
+        ))
 
         #expect(match?.id.rawValue == "nearest-close")
         #expect(missingReference == nil)
@@ -226,7 +229,13 @@ struct BenchmarkCohortTests {
 
     @Test("Trend evaluator classifies required multi-build history shapes")
     func trendEvaluatorClassifiesRequiredHistoryShapes() {
-        let cases: [(name: String, values: [Double], classification: BenchmarkTrendClassification, confidence: BenchmarkTrendConfidence, outcomes: Set<BenchmarkTrendHistoryOutcome>)] = [
+        let cases: [(
+            name: String,
+            values: [Double],
+            classification: BenchmarkTrendClassification,
+            confidence: BenchmarkTrendConfidence,
+            outcomes: Set<BenchmarkTrendHistoryOutcome>
+        )] = [
             ("improving", [140, 130, 120, 100, 90], .improving, .high, []),
             ("regressing", [90, 95, 110, 120, 130], .regressing, .high, []),
             ("stable", [100, 101, 102, 101, 102], .stable, .high, [.suppressedSmallMovement]),
@@ -238,10 +247,13 @@ struct BenchmarkCohortTests {
         for testCase in cases {
             let evaluation = trendEvaluation(values: testCase.values)
 
-            #expect(evaluation.classification == testCase.classification, "Unexpected classification for \(testCase.name)")
+            #expect(
+                evaluation.classification == testCase.classification,
+                "Unexpected classification for \(testCase.name)"
+            )
             #expect(evaluation.confidence == testCase.confidence, "Unexpected confidence for \(testCase.name)")
             #expect(evaluation.outcomes == testCase.outcomes, "Unexpected outcomes for \(testCase.name)")
-            #expect(evaluation.lastRuns.map { $0.summary.mean } == testCase.values.map(Optional.some))
+            #expect(evaluation.lastRuns.map(\.summary.mean) == testCase.values.map(Optional.some))
         }
     }
 
@@ -262,12 +274,26 @@ struct BenchmarkCohortTests {
 
     @Test("Comparable grouping keeps only exact envelope-backed run groups")
     func comparableGroupingKeepsOnlyExactEnvelopeBackedRunGroups() async throws {
-        let referenceFingerprint = fingerprint(workflow: "collage-export", mediaKind: "video", mediaBucket: "short-video")
+        let referenceFingerprint = fingerprint(
+            workflow: "collage-export",
+            mediaKind: "video",
+            mediaBucket: "short-video"
+        )
         let otherFingerprint = fingerprint(workflow: "collage-export", mediaKind: "video", mediaBucket: "long-video")
         let samePrevious = comparableRun(id: "same-previous", startedAt: 10, fingerprint: referenceFingerprint)
         let current = comparableRun(id: "current", startedAt: 50, fingerprint: referenceFingerprint)
-        let otherBuild = comparableRun(id: "other-build", startedAt: 40, bundleBuildNumber: "4217", fingerprint: referenceFingerprint)
-        let otherDevice = comparableRun(id: "other-device", startedAt: 30, deviceModel: "iPhone14,2", fingerprint: referenceFingerprint)
+        let otherBuild = comparableRun(
+            id: "other-build",
+            startedAt: 40,
+            bundleBuildNumber: "4217",
+            fingerprint: referenceFingerprint
+        )
+        let otherDevice = comparableRun(
+            id: "other-device",
+            startedAt: 30,
+            deviceModel: "iPhone14,2",
+            fingerprint: referenceFingerprint
+        )
         let otherShape = comparableRun(id: "other-shape", startedAt: 20, fingerprint: otherFingerprint)
         let missingEnvelope = run(id: "missing-envelope", startedAt: 5, scenarioFingerprint: referenceFingerprint)
         let runs = [samePrevious, current, otherBuild, otherDevice, otherShape, missingEnvelope]
@@ -294,7 +320,7 @@ struct BenchmarkCohortTests {
         #expect(currentGroup.runs.map(\.id.rawValue) == ["current", "same-previous"])
         #expect(groups.flatMap(\.runs).contains { $0.id == missingEnvelope.id } == false)
         #expect(evaluation.previousComparable?.run.id == samePrevious.id)
-        #expect(evaluation.lastRuns.map { $0.run.id.rawValue } == ["same-previous", "current"])
+        #expect(evaluation.lastRuns.map(\.run.id.rawValue) == ["same-previous", "current"])
         #expect(evaluation.classification == .improving)
     }
 

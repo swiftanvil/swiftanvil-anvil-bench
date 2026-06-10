@@ -2,7 +2,7 @@ import BenchmarkKit
 import SwiftUI
 
 #if canImport(Charts)
-import Charts
+    import Charts
 #endif
 
 struct BenchmarkOverviewSummarySection: View {
@@ -204,23 +204,23 @@ struct BenchmarkOverviewStatusChart: View {
 
     var body: some View {
         #if canImport(Charts)
-        Chart(data, id: \.0) { label, count, color in
-            BarMark(
-                x: .value("Count", count),
-                y: .value("State", label)
-            )
-            .foregroundStyle(color)
-        }
-        .chartXAxisLabel("Comparisons")
-        .frame(height: CGFloat(max(140, data.count * 32)))
-        .padding(12)
-        .background(.background, in: RoundedRectangle(cornerRadius: 16))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.quaternary)
-        }
+            Chart(data, id: \.0) { label, count, color in
+                BarMark(
+                    x: .value("Count", count),
+                    y: .value("State", label)
+                )
+                .foregroundStyle(color)
+            }
+            .chartXAxisLabel("Comparisons")
+            .frame(height: CGFloat(max(140, data.count * 32)))
+            .padding(12)
+            .background(.background, in: RoundedRectangle(cornerRadius: 16))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(.quaternary)
+            }
         #else
-        BenchmarkChartFallbackView(message: "Overview chart unavailable on this build.")
+            BenchmarkChartFallbackView(message: "Overview chart unavailable on this build.")
         #endif
     }
 }

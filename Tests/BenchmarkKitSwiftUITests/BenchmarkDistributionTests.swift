@@ -71,12 +71,15 @@ struct BenchmarkDistributionTests {
 struct BenchmarkValueFormatterTests {
     @Test("Millisecond values display as seconds with two decimals")
     func millisecondValuesDisplayAsSeconds() {
-        let formatted = BenchmarkValueFormatter.value(1_234.5, unit: .milliseconds)
+        let formatted = BenchmarkValueFormatter.value(1234.5, unit: .milliseconds)
 
         #expect(formatted == "1.23 s")
-        #expect(BenchmarkValueFormatter.absoluteDelta(BenchmarkDelta(baseline: 2_000, current: 1_500), unit: .milliseconds) == "-0.50 s")
+        #expect(BenchmarkValueFormatter.absoluteDelta(
+            BenchmarkDelta(baseline: 2000, current: 1500),
+            unit: .milliseconds
+        ) == "-0.50 s")
         #expect(BenchmarkValueFormatter.unitLabel(.milliseconds) == "s")
-        #expect(BenchmarkValueFormatter.displayValue(2_500, unit: .milliseconds) == 2.5)
+        #expect(BenchmarkValueFormatter.displayValue(2500, unit: .milliseconds) == 2.5)
     }
 
     @Test("Nil value formats as Unavailable")

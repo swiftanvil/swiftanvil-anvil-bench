@@ -73,7 +73,7 @@ private struct BenchmarkLoadingSection: View {
             Text(title)
                 .font(.headline)
 
-            ForEach(0..<3, id: \.self) { _ in
+            ForEach(0 ..< 3, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: 8)
                     .fill(.quaternary)
                     .frame(height: 44)

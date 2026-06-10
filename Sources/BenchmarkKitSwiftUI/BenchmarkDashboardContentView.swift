@@ -73,8 +73,10 @@ struct BenchmarkDashboardContentView: View {
             }
         }
         .navigationDestination(for: BenchmarkDrillRoute.self) { route in
-            if let row = row(forID: route.rowID),
-               let sample = row.history.sortedPoints.first(where: { $0.id == route.sampleID }) {
+            if
+                let row = row(forID: route.rowID),
+                let sample = row.history.sortedPoints.first(where: { $0.id == route.sampleID })
+            {
                 BenchmarkSampleDrillView(row: row, sample: sample)
             } else {
                 BenchmarkDashboardUnavailableView(
@@ -88,7 +90,6 @@ struct BenchmarkDashboardContentView: View {
         }
     }
 
-    @ViewBuilder
     private var unavailableView: some View {
         BenchmarkDashboardUnavailableView(
             systemImage: "questionmark.circle",
@@ -207,7 +208,7 @@ struct BenchmarkDashboardLoadedContentView: View {
                     }
                 }
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) { }
         } message: {
             Text("This removes all locally recorded benchmark runs and samples so new comparisons start clean.")
         }

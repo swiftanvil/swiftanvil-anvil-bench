@@ -87,7 +87,7 @@ struct BenchmarkComparisonRowView: View {
             "baseline \(BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit))",
             "current \(BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit))",
             "absolute delta \(BenchmarkValueFormatter.absoluteDelta(row.comparison.delta, unit: row.metric.unit))",
-            "percent delta \(BenchmarkValueFormatter.percent(row.comparison.delta?.percentage))",
+            "percent delta \(BenchmarkValueFormatter.percent(row.comparison.delta?.percentage))"
         ]
         .compactMap(\.self)
         .joined(separator: ", ")

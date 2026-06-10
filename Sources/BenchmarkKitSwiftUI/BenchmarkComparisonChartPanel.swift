@@ -2,7 +2,7 @@ import BenchmarkKit
 import SwiftUI
 
 #if canImport(Charts)
-import Charts
+    import Charts
 #endif
 
 struct BenchmarkComparisonChartPanel: View {
@@ -53,44 +53,44 @@ struct BenchmarkComparisonChartPanel: View {
     @ViewBuilder
     private var chartContent: some View {
         #if canImport(Charts)
-        Chart {
-            RuleMark(x: .value("No change", 0.0))
-                .foregroundStyle(.secondary.opacity(0.45))
-                .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+            Chart {
+                RuleMark(x: .value("No change", 0.0))
+                    .foregroundStyle(.secondary.opacity(0.45))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
 
-            ForEach(chartRows) { point in
-                BarMark(
-                    x: .value("Delta percent", point.deltaPercentage),
-                    y: .value("Comparison", point.title)
-                )
-                .foregroundStyle(BenchmarkStatusStyle.color(for: point.status))
-                .accessibilityLabel(point.accessibilityLabel)
+                ForEach(chartRows) { point in
+                    BarMark(
+                        x: .value("Delta percent", point.deltaPercentage),
+                        y: .value("Comparison", point.title)
+                    )
+                    .foregroundStyle(BenchmarkStatusStyle.color(for: point.status))
+                    .accessibilityLabel(point.accessibilityLabel)
+                }
             }
-        }
-        .chartXAxisLabel("Delta percent")
-        .chartLegend(.hidden)
-        .frame(height: CGFloat(max(180, chartRows.count * 36)))
-        .padding(12)
-        .background(.background, in: RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.quaternary)
-        }
-        .transaction { transaction in
-            if reduceMotion {
-                transaction.animation = nil
+            .chartXAxisLabel("Delta percent")
+            .chartLegend(.hidden)
+            .frame(height: CGFloat(max(180, chartRows.count * 36)))
+            .padding(12)
+            .background(.background, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.quaternary)
             }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilitySummary)
+            .transaction { transaction in
+                if reduceMotion {
+                    transaction.animation = nil
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilitySummary)
         #else
-        BenchmarkChartFallbackView(message: accessibilitySummary)
+            BenchmarkChartFallbackView(message: accessibilitySummary)
         #endif
     }
 
     private var accessibilitySummary: String {
-        let improved = chartRows.filter { $0.status == .improved }.count
-        let regressed = chartRows.filter { $0.status == .regressed }.count
+        let improved = chartRows.count(where: { $0.status == .improved })
+        let regressed = chartRows.count(where: { $0.status == .regressed })
         let largestMovement = chartRows.max { abs($0.deltaPercentage) < abs($1.deltaPercentage) }
 
         var parts = [
@@ -100,7 +100,10 @@ struct BenchmarkComparisonChartPanel: View {
         ]
 
         if let largestMovement {
-            parts.append("largest movement \(largestMovement.title) \(BenchmarkValueFormatter.percent(largestMovement.deltaPercentage))")
+            parts
+                .append(
+                    "largest movement \(largestMovement.title) \(BenchmarkValueFormatter.percent(largestMovement.deltaPercentage))"
+                )
         }
 
         return parts.joined(separator: ", ")

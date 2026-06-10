@@ -138,7 +138,7 @@ struct BenchmarkKitSwiftUITests {
         } else {
             Issue.record("Expected the dense demo fixture to provide a current baseline.")
         }
-        #expect(state.rows.filter { $0.matrixContexts.isEmpty == false }.count > defaultState.topRegressions.count)
+        #expect(state.rows.count(where: { $0.matrixContexts.isEmpty == false }) > defaultState.topRegressions.count)
     }
 
     @Test("Default comparison insight is available before audit drilldown")
@@ -330,7 +330,7 @@ struct BenchmarkKitSwiftUITests {
         .load(filters: filters)
 
         #expect(state.rows.isEmpty == false)
-        #expect(state.rows.allSatisfy { $0.status.isMissingData })
+        #expect(state.rows.allSatisfy(\.status.isMissingData))
         #expect(state.hasArchivedHistory)
     }
 
@@ -384,13 +384,17 @@ struct BenchmarkKitSwiftUITests {
 
         #expect(ranks == sortedRanks)
 
-        if let firstRegressedIndex = state.rows.firstIndex(where: { $0.status == .regressed }),
-           let firstMissingIndex = state.rows.firstIndex(where: { $0.status.isMissingData }) {
+        if
+            let firstRegressedIndex = state.rows.firstIndex(where: { $0.status == .regressed }),
+            let firstMissingIndex = state.rows.firstIndex(where: { $0.status.isMissingData })
+        {
             #expect(firstRegressedIndex < firstMissingIndex)
         }
 
-        if let firstImprovedIndex = state.rows.firstIndex(where: { $0.status == .improved }),
-           let firstUnchangedIndex = state.rows.firstIndex(where: { $0.status == .unchanged }) {
+        if
+            let firstImprovedIndex = state.rows.firstIndex(where: { $0.status == .improved }),
+            let firstUnchangedIndex = state.rows.firstIndex(where: { $0.status == .unchanged })
+        {
             #expect(firstImprovedIndex < firstUnchangedIndex)
         }
     }
@@ -579,7 +583,7 @@ struct BenchmarkKitSwiftUITests {
                 outputDurationSeconds: 12.5,
                 outputFrameRate: 30,
                 outputContainer: .mp4,
-                outputBitrateKbps: 8_000,
+                outputBitrateKbps: 8000,
                 samplingProfile: samplingProfile
             )
             metadata[BenchmarkExportShapeContext.metadataKey] = try shape.encodedString()

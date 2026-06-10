@@ -59,7 +59,7 @@ public struct DefaultBenchmarkTitleComposer: BenchmarkTitleComposer {
     public static let hashVersion: String = "v1"
 
     /// Creates the default composer.
-    public init() {}
+    public init() { }
 
     /// Composes a title from an ordered action sequence.
     public func compose(actions: [BenchmarkActionTag]) -> BenchmarkComposedTitle {

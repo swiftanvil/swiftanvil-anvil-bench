@@ -1,5 +1,5 @@
-import Foundation
 import AnvilCore
+import Foundation
 
 /// The result of a completed benchmark run.
 public struct BenchmarkResult: Sendable {
@@ -40,17 +40,17 @@ public struct BenchmarkTaskRunner: Sendable {
         operation: @escaping @Sendable () async throws -> [BenchmarkSampleDescriptor]
     ) async throws -> AnvilTask<BenchmarkResult> {
         AnvilTask(label: "benchmark-\(descriptor.scenarioID.rawValue)") {
-            let run = try await self.recorder.startRun(descriptor)
-            let measurement = try await self.measurer.measure {
+            let run = try await recorder.startRun(descriptor)
+            let measurement = try await measurer.measure {
                 let sampleDescriptors = try await operation()
                 var samples: [BenchmarkSample] = []
                 for sampleDescriptor in sampleDescriptors {
-                    let sample = try await self.recorder.recordSample(sampleDescriptor, in: run.id)
+                    let sample = try await recorder.recordSample(sampleDescriptor, in: run.id)
                     samples.append(sample)
                 }
                 return samples
             }
-            try await self.recorder.finishRun(id: run.id, endedAt: Date())
+            try await recorder.finishRun(id: run.id, endedAt: Date())
             return BenchmarkResult(
                 run: run,
                 samples: measurement.value,

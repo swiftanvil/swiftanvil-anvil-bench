@@ -76,24 +76,24 @@ struct BenchmarkScenarioFilterSheet: View {
             }
         }
         .navigationTitle("Filters")
-#if os(iOS) || os(tvOS) || os(watchOS)
-        .navigationBarTitleDisplayMode(.inline)
-#endif
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button("Close") {
-                    dismiss()
-                }
-            }
-
-            if selectedComparisonDimensionValues.isEmpty == false {
+        #if os(iOS) || os(tvOS) || os(watchOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+            .toolbar {
                 ToolbarItem(placement: .automatic) {
-                    Button("Clear All") {
-                        selectedComparisonDimensionValues.removeAll()
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+
+                if selectedComparisonDimensionValues.isEmpty == false {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Clear All") {
+                            selectedComparisonDimensionValues.removeAll()
+                        }
                     }
                 }
             }
-        }
     }
 
     private var activeFilterValues: [BenchmarkSelectedComparisonDimensionValue] {
@@ -122,7 +122,10 @@ struct BenchmarkScenarioFilterSheet: View {
         selectedComparisonDimensionValues.removeValue(forKey: dimension.id)
     }
 
-    private func isSelected(_ value: BenchmarkComparisonDimensionValue, for dimension: BenchmarkComparisonDimension) -> Bool {
+    private func isSelected(
+        _ value: BenchmarkComparisonDimensionValue,
+        for dimension: BenchmarkComparisonDimension
+    ) -> Bool {
         selectedComparisonDimensionValues[dimension.id]?.id == value.id
     }
 
@@ -183,9 +186,9 @@ private enum BenchmarkScenarioFilterPreset: String, CaseIterable, Identifiable {
     ) -> [BenchmarkComparisonDimension.ID: BenchmarkComparisonDimensionValue] {
         switch self {
         case .product:
-            return [:]
+            [:]
         case .qa:
-            return selection(
+            selection(
                 from: dimensions,
                 rules: [
                     BenchmarkScenarioFilterPresetRule(
@@ -199,7 +202,7 @@ private enum BenchmarkScenarioFilterPreset: String, CaseIterable, Identifiable {
                 ]
             )
         case .developerAudit:
-            return selection(
+            selection(
                 from: dimensions,
                 rules: [
                     BenchmarkScenarioFilterPresetRule(
@@ -213,7 +216,7 @@ private enum BenchmarkScenarioFilterPreset: String, CaseIterable, Identifiable {
                 ]
             )
         case .releaseCandidate:
-            return selection(
+            selection(
                 from: dimensions,
                 rules: [
                     BenchmarkScenarioFilterPresetRule(

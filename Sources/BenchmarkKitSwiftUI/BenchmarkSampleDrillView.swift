@@ -15,7 +15,7 @@ struct BenchmarkSampleDrillView: View {
         guard let index = sorted.firstIndex(of: sample) else { return [] }
         let lower = max(0, index - 5)
         let upper = min(sorted.count, index + 6)
-        return Array(sorted[lower..<upper])
+        return Array(sorted[lower ..< upper])
     }
 
     private var sampleMatrixContext: BenchmarkRunMatrixContext? {
@@ -57,7 +57,10 @@ struct BenchmarkSampleDrillView: View {
                 ) {
                     BenchmarkValueField(title: "Metric", value: row.metric.name)
                     BenchmarkValueField(title: "Scope", value: sample.scope.title)
-                    BenchmarkValueField(title: "Value", value: BenchmarkValueFormatter.value(sample.value, unit: row.metric.unit))
+                    BenchmarkValueField(
+                        title: "Value",
+                        value: BenchmarkValueFormatter.value(sample.value, unit: row.metric.unit)
+                    )
                     BenchmarkValueField(title: "Run ID", value: sample.runID.rawValue)
                     BenchmarkValueField(title: "Sample ID", value: sample.id.rawValue)
                     if let context = sample.contextSummary {

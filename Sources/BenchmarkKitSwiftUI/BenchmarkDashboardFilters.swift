@@ -127,7 +127,7 @@ public enum BenchmarkDashboardDateFilter: String, CaseIterable, Hashable, Sendab
     }
 }
 
-struct BenchmarkDashboardFilterState: Hashable, Sendable {
+struct BenchmarkDashboardFilterState: Hashable {
     var archiveSelection: BenchmarkDashboardArchiveSelection
     var selectedSuiteID: BenchmarkSuite.ID?
     var selectedScenarioID: BenchmarkScenario.ID?
@@ -144,7 +144,7 @@ struct BenchmarkDashboardFilterState: Hashable, Sendable {
     var comparisonCohortBID: BenchmarkCohort.ID?
 
     init(initialArchiveFilter: BenchmarkArchiveFilter = .active) {
-        self.archiveSelection = switch initialArchiveFilter {
+        archiveSelection = switch initialArchiveFilter {
         case .active:
             .active
         case .archived:

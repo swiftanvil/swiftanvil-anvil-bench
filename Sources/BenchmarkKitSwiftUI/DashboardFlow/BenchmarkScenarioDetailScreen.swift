@@ -54,49 +54,51 @@ struct BenchmarkScenarioDetailScreen: View {
                     .tag(row.metric.id)
                 }
             }
-#if os(iOS) || os(tvOS) || os(watchOS)
+            #if os(iOS) || os(tvOS) || os(watchOS)
             .tabViewStyle(.page(indexDisplayMode: .never))
-#endif
+            #endif
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .navigationTitle(scenarioGroup.scenario.name)
-#if os(iOS) || os(tvOS) || os(watchOS)
-        .navigationBarTitleDisplayMode(.inline)
-#endif
-        .toolbar {
-            if scenarioGroup.comparisonDimensions.isEmpty == false {
-                ToolbarItem(placement: .automatic) {
-                    Button("Filter") {
-                        isFilterSheetPresented = true
+        #if os(iOS) || os(tvOS) || os(watchOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+            .toolbar {
+                if scenarioGroup.comparisonDimensions.isEmpty == false {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Filter") {
+                            isFilterSheetPresented = true
+                        }
                     }
                 }
             }
-        }
-        .sheet(isPresented: $isFilterSheetPresented) {
-            NavigationStack {
-                BenchmarkScenarioFilterSheet(
-                    dimensions: scenarioGroup.comparisonDimensions,
-                    selectedComparisonDimensionValues: $filters.selectedComparisonDimensionValues
-                )
+            .sheet(isPresented: $isFilterSheetPresented) {
+                NavigationStack {
+                    BenchmarkScenarioFilterSheet(
+                        dimensions: scenarioGroup.comparisonDimensions,
+                        selectedComparisonDimensionValues: $filters.selectedComparisonDimensionValues
+                    )
+                }
+                .presentationDetents([.medium, .large])
             }
-            .presentationDetents([.medium, .large])
-        }
-        .task {
-            if selectedMetricID == nil {
-                selectedMetricID = initialMetricID ??
-                    persistedMetricID ??
-                    scenarioGroup.rows.first?.metric.id
+            .task {
+                if selectedMetricID == nil {
+                    selectedMetricID = initialMetricID ??
+                        persistedMetricID ??
+                        scenarioGroup.rows.first?.metric.id
+                }
             }
-        }
-        .onChange(of: selectedMetricID) { newValue in
-            guard let newValue else { return }
-            UserDefaults.standard.set(newValue.rawValue, forKey: persistedMetricDefaultsKey)
-        }
-        .onChange(of: scenarioGroup.rows.map(\.metric.id)) { newMetricIDs in
-            guard let selectedMetricID,
-                  newMetricIDs.contains(selectedMetricID) == false else { return }
-            self.selectedMetricID = scenarioGroup.rows.first?.metric.id
-        }
+            .onChange(of: selectedMetricID) { newValue in
+                guard let newValue else { return }
+                UserDefaults.standard.set(newValue.rawValue, forKey: persistedMetricDefaultsKey)
+            }
+            .onChange(of: scenarioGroup.rows.map(\.metric.id)) { newMetricIDs in
+                guard
+                    let selectedMetricID,
+                    newMetricIDs.contains(selectedMetricID) == false
+                else { return }
+                self.selectedMetricID = scenarioGroup.rows.first?.metric.id
+            }
     }
 
     private var selectedMetricBinding: Binding<BenchmarkMetric.ID> {

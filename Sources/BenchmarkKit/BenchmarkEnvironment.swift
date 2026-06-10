@@ -1,6 +1,6 @@
 import Foundation
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 /// The BenchmarkKit semantic version embedded into envelopes for cross-build comparability.
@@ -128,13 +128,13 @@ public enum BenchmarkEnvironmentMetadataKey {
     public static let timeZoneIdentifier = "environment.timeZoneIdentifier"
 }
 
-extension BenchmarkEnvironment {
+public extension BenchmarkEnvironment {
     /// A build reference for performance change notes introduced in this environment.
     ///
     /// The reference uses the same bundle build number that benchmark history stores in
     /// `BenchmarkEnvironmentMetadataKey.bundleBuildNumber`, so bundled notes and recorded runs
     /// can be associated without deriving causality from benchmark movement.
-    public func performanceChangeBuild(metadata: [String: String] = [:]) -> BenchmarkPerformanceChangeBuild {
+    func performanceChangeBuild(metadata: [String: String] = [:]) -> BenchmarkPerformanceChangeBuild {
         BenchmarkPerformanceChangeBuild(
             bundleBuildNumber: bundleBuildNumber,
             bundleShortVersion: bundleShortVersion.isEmpty ? nil : bundleShortVersion,
@@ -147,7 +147,7 @@ extension BenchmarkEnvironment {
     ///
     /// The projection is additive and string-only by design so history consumers can access
     /// environment context without decoding `BenchmarkEnvelope`.
-    public var historyMetadata: [String: String] {
+    var historyMetadata: [String: String] {
         var metadata: [String: String] = [
             BenchmarkEnvironmentMetadataKey.deviceModel: deviceModel,
             BenchmarkEnvironmentMetadataKey.cpuClass: cpuClass,
@@ -177,7 +177,7 @@ extension BenchmarkEnvironment {
     ///
     /// Hosts that want to override individual fields can build a value with the memberwise initializer
     /// and use this only as a starting point.
-    public static func current(
+    static func current(
         bundleShortVersion: String,
         bundleBuildNumber: String,
         gitSHA: String? = nil,
@@ -200,12 +200,12 @@ extension BenchmarkEnvironment {
     }
 }
 
-extension BenchmarkEnvelope {
+public extension BenchmarkEnvelope {
     /// Produces additive history metadata from the envelope and optional caller-supplied metadata.
     ///
     /// Caller-supplied metadata wins on key collisions so probes can override or redact individual
     /// fields without losing the rest of the environment projection.
-    public func historyMetadata(merging metadata: [String: String] = [:]) -> [String: String] {
+    func historyMetadata(merging metadata: [String: String] = [:]) -> [String: String] {
         var merged = metadata
         merged.merge(environment.historyMetadata, uniquingKeysWith: { current, _ in current })
         merged.merge(extras, uniquingKeysWith: { current, _ in current })
@@ -228,12 +228,16 @@ public protocol BenchmarkEnvelopeProvider: Sendable {
     func performanceChangeNotes() async -> [BenchmarkPerformanceChangeNote]
 }
 
-extension BenchmarkEnvelopeProvider {
+public extension BenchmarkEnvelopeProvider {
     /// Default empty extras for hosts that do not need to inject metadata.
-    public func extras() async -> [String: String] { [:] }
+    func extras() async -> [String: String] {
+        [:]
+    }
 
     /// Default empty performance notes for hosts that do not bundle change annotations.
-    public func performanceChangeNotes() async -> [BenchmarkPerformanceChangeNote] { [] }
+    func performanceChangeNotes() async -> [BenchmarkPerformanceChangeNote] {
+        []
+    }
 }
 
 /// The bundled envelope written to a benchmark run.
@@ -379,8 +383,8 @@ public enum BenchmarkSamplingProfile: String, CaseIterable, Hashable, Codable, S
     /// The nominal sampling frequency in hertz for the profile.
     public var samplesPerSecond: Double {
         switch self {
-        case .light: return 1
-        case .deep: return 10
+        case .light: 1
+        case .deep: 10
         }
     }
 
@@ -392,8 +396,8 @@ public enum BenchmarkSamplingProfile: String, CaseIterable, Hashable, Codable, S
     /// Whether raw samples should be persisted; `.light` keeps summary stats only.
     public var retainsRawSamples: Bool {
         switch self {
-        case .light: return false
-        case .deep: return true
+        case .light: false
+        case .deep: true
         }
     }
 }
@@ -583,7 +587,8 @@ public struct BenchmarkSystemSummary: Hashable, Codable, Sendable {
             sampleCount: samples.count,
             residentMemoryBytes: BenchmarkSignalSummary.make(from: samples.map { Double($0.residentMemoryBytes) }),
             memoryFootprintBytes: BenchmarkSignalSummary.make(from: samples.map { Double($0.memoryFootprintBytes) }),
-            availableMemoryBytes: BenchmarkSignalSummary.make(from: samples.compactMap { $0.availableMemoryBytes.map(Double.init) }),
+            availableMemoryBytes: BenchmarkSignalSummary
+                .make(from: samples.compactMap { $0.availableMemoryBytes.map(Double.init) }),
             cpuUsageFraction: BenchmarkSignalSummary.make(from: samples.map(\.cpuUsageFraction)),
             batteryLevel: BenchmarkSignalSummary.make(from: samples.compactMap(\.batteryLevel)),
             freeDiskBytes: BenchmarkSignalSummary.make(from: samples.compactMap { $0.freeDiskBytes.map(Double.init) }),
@@ -625,9 +630,9 @@ public enum SystemFacts {
     /// Whether the current process is running in a simulator.
     public static var isSimulator: Bool {
         #if targetEnvironment(simulator)
-        return true
+            return true
         #else
-        return false
+            return false
         #endif
     }
 
@@ -637,7 +642,7 @@ public enum SystemFacts {
         var buffer = [UInt8](repeating: 0, count: size)
         guard sysctlbyname(name, &buffer, &size, nil, 0) == 0 else { return nil }
         if let nullIndex = buffer.firstIndex(of: 0) {
-            buffer.removeSubrange(nullIndex..<buffer.endIndex)
+            buffer.removeSubrange(nullIndex ..< buffer.endIndex)
         }
         return String(decoding: buffer, as: UTF8.self)
     }

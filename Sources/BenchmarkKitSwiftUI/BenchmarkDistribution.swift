@@ -6,30 +6,44 @@ import Foundation
 /// `BenchmarkSampleSummary` only stores `mean / min / max / latest`; the dashboard
 /// distribution chart needs `p50 / p95 / p99` and a histogram. Computed lazily from
 /// the metric history points so that no changes are required in the core model.
-struct BenchmarkDistribution: Hashable, Sendable {
+struct BenchmarkDistribution: Hashable {
     /// The samples included in the distribution, sorted ascending.
     var sortedValues: [Double]
 
     /// The number of samples.
-    var count: Int { sortedValues.count }
+    var count: Int {
+        sortedValues.count
+    }
 
     /// Whether the distribution has enough samples to draw percentile bands meaningfully.
-    var hasEnoughSamplesForPercentiles: Bool { sortedValues.count >= 5 }
+    var hasEnoughSamplesForPercentiles: Bool {
+        sortedValues.count >= 5
+    }
 
     /// The minimum sample value.
-    var minimum: Double? { sortedValues.first }
+    var minimum: Double? {
+        sortedValues.first
+    }
 
     /// The maximum sample value.
-    var maximum: Double? { sortedValues.last }
+    var maximum: Double? {
+        sortedValues.last
+    }
 
     /// The 50th percentile (median).
-    var p50: Double? { percentile(0.50) }
+    var p50: Double? {
+        percentile(0.50)
+    }
 
     /// The 95th percentile.
-    var p95: Double? { percentile(0.95) }
+    var p95: Double? {
+        percentile(0.95)
+    }
 
     /// The 99th percentile.
-    var p99: Double? { percentile(0.99) }
+    var p99: Double? {
+        percentile(0.99)
+    }
 
     /// Returns the value at the supplied percentile in `[0, 1]` using linear
     /// interpolation between the two nearest ranks.
@@ -65,7 +79,7 @@ struct BenchmarkDistribution: Hashable, Sendable {
 
         let span = maximum - minimum
         let step = span / Double(binCount)
-        var bins: [HistogramBin] = (0..<binCount).map { index in
+        var bins: [HistogramBin] = (0 ..< binCount).map { index in
             let lower = minimum + Double(index) * step
             let upper = index == binCount - 1 ? maximum : lower + step
             return HistogramBin(lower: lower, upper: upper, count: 0)
@@ -82,12 +96,16 @@ struct BenchmarkDistribution: Hashable, Sendable {
     }
 }
 
-struct HistogramBin: Hashable, Identifiable, Sendable {
+struct HistogramBin: Hashable, Identifiable {
     var lower: Double
     var upper: Double
     var count: Int
 
-    var id: Double { lower }
+    var id: Double {
+        lower
+    }
 
-    var midpoint: Double { (lower + upper) / 2 }
+    var midpoint: Double {
+        (lower + upper) / 2
+    }
 }

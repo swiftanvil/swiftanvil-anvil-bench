@@ -116,7 +116,9 @@ private struct BenchmarkCompactCounts: View {
             BenchmarkCountPill(title: "M", count: summary.missingDataCount, status: .missingBaseline)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Regressed \(summary.regressedCount), improved \(summary.improvedCount), missing \(summary.missingDataCount)")
+        .accessibilityLabel(
+            "Regressed \(summary.regressedCount), improved \(summary.improvedCount), missing \(summary.missingDataCount)"
+        )
     }
 }
 

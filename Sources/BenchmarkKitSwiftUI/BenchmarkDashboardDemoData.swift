@@ -3,7 +3,8 @@ import Foundation
 
 /// Demo fixtures and history data sources for previews, tests, and manual dashboard tuning.
 public enum BenchmarkDashboardDemoData {
-    /// A catalog that contains active, archived, missing, neutral, improved, regressed, volatile, and recovered examples.
+    /// A catalog that contains active, archived, missing, neutral, improved, regressed, volatile, and recovered
+    /// examples.
     public static let catalog = BenchmarkDashboardCatalog(
         suites: [
             renderingSuite,
@@ -74,15 +75,15 @@ public enum BenchmarkDashboardDemoError: Error, LocalizedError, Sendable {
 /// A history data source that always throws a demo error.
 public struct BenchmarkDashboardFailingHistoryDataSource: BenchmarkHistoryDataSource {
     /// Creates a failing demo history data source.
-    public init() {}
+    public init() { }
 
     /// Throws a demo error instead of returning runs.
-    public func runs(matching query: BenchmarkRunQuery) async throws -> [BenchmarkRun] {
+    public func runs(matching _: BenchmarkRunQuery) async throws -> [BenchmarkRun] {
         throw BenchmarkDashboardDemoError.historyUnavailable
     }
 
     /// Throws a demo error instead of returning samples.
-    public func samples(matching query: BenchmarkSampleQuery) async throws -> [BenchmarkSample] {
+    public func samples(matching _: BenchmarkSampleQuery) async throws -> [BenchmarkSample] {
         throw BenchmarkDashboardDemoError.historyUnavailable
     }
 }
@@ -318,7 +319,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: launchScenario.id,
             startedAt: 1_777_787_300,
             archiveState: .active,
-            metadata: ["device": "Phone 16", "os": "26.0", "build": "101", "branch": "feature", "configuration": "release"]
+            metadata: [
+                "device": "Phone 16",
+                "os": "26.0",
+                "build": "101",
+                "branch": "feature",
+                "configuration": "release"
+            ]
         ),
         run(
             id: "run.scrolling.baseline",
@@ -358,7 +365,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: compileScenario.id,
             startedAt: 1_777_730_000,
             archiveState: .active,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "100", "branch": "main", "configuration": "release"]
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "100",
+                "branch": "main",
+                "configuration": "release"
+            ]
         ),
         run(
             id: "run.build.current",
@@ -366,7 +379,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: compileScenario.id,
             startedAt: 1_777_816_400,
             archiveState: .active,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "101", "branch": "feature", "configuration": "release"],
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "101",
+                "branch": "feature",
+                "configuration": "release"
+            ],
             performanceChangeNotes: [documentationOnlyNote]
         ),
         run(
@@ -435,7 +454,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: volatileScenario.id,
             startedAt: 1_776_186_400,
             archiveState: .archived,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "81", "branch": "feature", "trendStory": "volatile"]
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "81",
+                "branch": "feature",
+                "trendStory": "volatile"
+            ]
         ),
         run(
             id: "run.volatile.baseline.2",
@@ -451,7 +476,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: volatileScenario.id,
             startedAt: 1_776_359_200,
             archiveState: .archived,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "83", "branch": "feature", "trendStory": "volatile"]
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "83",
+                "branch": "feature",
+                "trendStory": "volatile"
+            ]
         ),
         run(
             id: "run.recovered.baseline.1",
@@ -459,7 +490,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: recoveredScenario.id,
             startedAt: 1_776_445_600,
             archiveState: .archived,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "84", "branch": "main", "trendStory": "recovered"]
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "84",
+                "branch": "main",
+                "trendStory": "recovered"
+            ]
         ),
         run(
             id: "run.recovered.baseline.2",
@@ -467,7 +504,13 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: recoveredScenario.id,
             startedAt: 1_776_532_000,
             archiveState: .archived,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "85", "branch": "main", "trendStory": "recovered"]
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "85",
+                "branch": "main",
+                "trendStory": "recovered"
+            ]
         ),
         run(
             id: "run.recovered.current",
@@ -475,45 +518,299 @@ private extension BenchmarkDashboardDemoData {
             scenarioID: recoveredScenario.id,
             startedAt: 1_776_618_400,
             archiveState: .archived,
-            metadata: ["device": "CI Mac mini", "os": "15.5", "build": "86", "branch": "feature", "trendStory": "recovered"]
+            metadata: [
+                "device": "CI Mac mini",
+                "os": "15.5",
+                "build": "86",
+                "branch": "feature",
+                "trendStory": "recovered"
+            ]
         )
     ]
 
     static let activeSamples: [BenchmarkSample] = [
-        sample(id: "sample.latency.baseline.1", runID: "run.active.baseline", scenarioID: launchScenario.id, metricID: latencyMetric.id, value: 120, measuredAt: 1_777_700_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.latency.baseline.2", runID: "run.active.baseline", scenarioID: launchScenario.id, metricID: latencyMetric.id, value: 118, measuredAt: 1_777_700_200, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.latency.current.1", runID: "run.active.current", scenarioID: launchScenario.id, metricID: latencyMetric.id, value: 90, measuredAt: 1_777_786_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.latency.current.2", runID: "run.active.current", scenarioID: launchScenario.id, metricID: latencyMetric.id, value: 88, measuredAt: 1_777_786_600, tags: [currentTag, smokeTag]),
-        sample(id: "sample.latency.baseline.phone.1", runID: "run.active.baseline.phone", scenarioID: launchScenario.id, metricID: latencyMetric.id, value: 132, measuredAt: 1_777_700_950, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.latency.current.phone.1", runID: "run.active.current.phone", scenarioID: launchScenario.id, metricID: latencyMetric.id, value: 98, measuredAt: 1_777_787_350, tags: [currentTag, smokeTag]),
-        sample(id: "sample.throughput.baseline.1", runID: "run.active.baseline", scenarioID: launchScenario.id, metricID: throughputMetric.id, value: 300, measuredAt: 1_777_700_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.throughput.current.1", runID: "run.active.current", scenarioID: launchScenario.id, metricID: throughputMetric.id, value: 260, measuredAt: 1_777_786_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.memory.baseline.1", runID: "run.scrolling.baseline", scenarioID: scrollingScenario.id, metricID: memoryMetric.id, value: 700, measuredAt: 1_777_710_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.memory.current.1", runID: "run.scrolling.current", scenarioID: scrollingScenario.id, metricID: memoryMetric.id, value: 840, measuredAt: 1_777_796_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.quality.baseline.1", runID: "run.scrolling.baseline", scenarioID: scrollingScenario.id, metricID: qualityMetric.id, value: 0.98, measuredAt: 1_777_710_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.quality.current.1", runID: "run.scrolling.current", scenarioID: scrollingScenario.id, metricID: qualityMetric.id, value: 0.96, measuredAt: 1_777_796_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.payload.baseline.1", runID: "run.import.baseline", scenarioID: importScenario.id, metricID: payloadMetric.id, value: 2048, measuredAt: 1_777_720_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.cache.current.1", runID: "run.import.current", scenarioID: importScenario.id, metricID: cacheMetric.id, value: 120, measuredAt: 1_777_806_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.build-time.baseline.1", runID: "run.build.baseline", scenarioID: compileScenario.id, metricID: buildTimeMetric.id, value: 64, measuredAt: 1_777_730_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.build-time.baseline.2", runID: "run.build.baseline", scenarioID: compileScenario.id, metricID: buildTimeMetric.id, value: 62, measuredAt: 1_777_730_200, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.build-time.current.1", runID: "run.build.current", scenarioID: compileScenario.id, metricID: buildTimeMetric.id, value: 51, measuredAt: 1_777_816_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.build-time.current.2", runID: "run.build.current", scenarioID: compileScenario.id, metricID: buildTimeMetric.id, value: 53, measuredAt: 1_777_816_600, tags: [currentTag, smokeTag]),
-        sample(id: "sample.export-blocking.baseline.1", runID: "run.export.baseline", scenarioID: BenchmarkExportBlocking.collageScenario.id, metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id, value: 4.8, measuredAt: 1_777_742_100, tags: [baselineTag, smokeTag, BenchmarkExportBlocking.exportTag]),
-        sample(id: "sample.export-blocking.baseline.2", runID: "run.export.baseline", scenarioID: BenchmarkExportBlocking.collageScenario.id, metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id, value: 5.1, measuredAt: 1_777_742_200, tags: [baselineTag, smokeTag, BenchmarkExportBlocking.exportTag]),
-        sample(id: "sample.export-blocking.current.1", runID: "run.export.current", scenarioID: BenchmarkExportBlocking.collageScenario.id, metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id, value: 6.4, measuredAt: 1_777_828_500, tags: [currentTag, smokeTag, BenchmarkExportBlocking.exportTag]),
-        sample(id: "sample.export-blocking.current.2", runID: "run.export.current", scenarioID: BenchmarkExportBlocking.collageScenario.id, metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id, value: 6.6, measuredAt: 1_777_828_600, tags: [currentTag, smokeTag, BenchmarkExportBlocking.exportTag])
+        sample(
+            id: "sample.latency.baseline.1",
+            runID: "run.active.baseline",
+            scenarioID: launchScenario.id,
+            metricID: latencyMetric.id,
+            value: 120,
+            measuredAt: 1_777_700_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.latency.baseline.2",
+            runID: "run.active.baseline",
+            scenarioID: launchScenario.id,
+            metricID: latencyMetric.id,
+            value: 118,
+            measuredAt: 1_777_700_200,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.latency.current.1",
+            runID: "run.active.current",
+            scenarioID: launchScenario.id,
+            metricID: latencyMetric.id,
+            value: 90,
+            measuredAt: 1_777_786_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.latency.current.2",
+            runID: "run.active.current",
+            scenarioID: launchScenario.id,
+            metricID: latencyMetric.id,
+            value: 88,
+            measuredAt: 1_777_786_600,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.latency.baseline.phone.1",
+            runID: "run.active.baseline.phone",
+            scenarioID: launchScenario.id,
+            metricID: latencyMetric.id,
+            value: 132,
+            measuredAt: 1_777_700_950,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.latency.current.phone.1",
+            runID: "run.active.current.phone",
+            scenarioID: launchScenario.id,
+            metricID: latencyMetric.id,
+            value: 98,
+            measuredAt: 1_777_787_350,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.throughput.baseline.1",
+            runID: "run.active.baseline",
+            scenarioID: launchScenario.id,
+            metricID: throughputMetric.id,
+            value: 300,
+            measuredAt: 1_777_700_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.throughput.current.1",
+            runID: "run.active.current",
+            scenarioID: launchScenario.id,
+            metricID: throughputMetric.id,
+            value: 260,
+            measuredAt: 1_777_786_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.memory.baseline.1",
+            runID: "run.scrolling.baseline",
+            scenarioID: scrollingScenario.id,
+            metricID: memoryMetric.id,
+            value: 700,
+            measuredAt: 1_777_710_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.memory.current.1",
+            runID: "run.scrolling.current",
+            scenarioID: scrollingScenario.id,
+            metricID: memoryMetric.id,
+            value: 840,
+            measuredAt: 1_777_796_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.quality.baseline.1",
+            runID: "run.scrolling.baseline",
+            scenarioID: scrollingScenario.id,
+            metricID: qualityMetric.id,
+            value: 0.98,
+            measuredAt: 1_777_710_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.quality.current.1",
+            runID: "run.scrolling.current",
+            scenarioID: scrollingScenario.id,
+            metricID: qualityMetric.id,
+            value: 0.96,
+            measuredAt: 1_777_796_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.payload.baseline.1",
+            runID: "run.import.baseline",
+            scenarioID: importScenario.id,
+            metricID: payloadMetric.id,
+            value: 2048,
+            measuredAt: 1_777_720_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.cache.current.1",
+            runID: "run.import.current",
+            scenarioID: importScenario.id,
+            metricID: cacheMetric.id,
+            value: 120,
+            measuredAt: 1_777_806_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.build-time.baseline.1",
+            runID: "run.build.baseline",
+            scenarioID: compileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 64,
+            measuredAt: 1_777_730_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.build-time.baseline.2",
+            runID: "run.build.baseline",
+            scenarioID: compileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 62,
+            measuredAt: 1_777_730_200,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.build-time.current.1",
+            runID: "run.build.current",
+            scenarioID: compileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 51,
+            measuredAt: 1_777_816_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.build-time.current.2",
+            runID: "run.build.current",
+            scenarioID: compileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 53,
+            measuredAt: 1_777_816_600,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.export-blocking.baseline.1",
+            runID: "run.export.baseline",
+            scenarioID: BenchmarkExportBlocking.collageScenario.id,
+            metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id,
+            value: 4.8,
+            measuredAt: 1_777_742_100,
+            tags: [baselineTag, smokeTag, BenchmarkExportBlocking.exportTag]
+        ),
+        sample(
+            id: "sample.export-blocking.baseline.2",
+            runID: "run.export.baseline",
+            scenarioID: BenchmarkExportBlocking.collageScenario.id,
+            metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id,
+            value: 5.1,
+            measuredAt: 1_777_742_200,
+            tags: [baselineTag, smokeTag, BenchmarkExportBlocking.exportTag]
+        ),
+        sample(
+            id: "sample.export-blocking.current.1",
+            runID: "run.export.current",
+            scenarioID: BenchmarkExportBlocking.collageScenario.id,
+            metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id,
+            value: 6.4,
+            measuredAt: 1_777_828_500,
+            tags: [currentTag, smokeTag, BenchmarkExportBlocking.exportTag]
+        ),
+        sample(
+            id: "sample.export-blocking.current.2",
+            runID: "run.export.current",
+            scenarioID: BenchmarkExportBlocking.collageScenario.id,
+            metricID: BenchmarkExportBlocking.perceivedBlockingDurationMetric.id,
+            value: 6.6,
+            measuredAt: 1_777_828_600,
+            tags: [currentTag, smokeTag, BenchmarkExportBlocking.exportTag]
+        )
     ]
 
     static let archivedSamples: [BenchmarkSample] = [
-        sample(id: "sample.archived.baseline.1", runID: "run.archived.baseline", scenarioID: archivedScenario.id, metricID: latencyMetric.id, value: 140, measuredAt: 1_776_000_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.archived.current.1", runID: "run.archived.current", scenarioID: archivedScenario.id, metricID: latencyMetric.id, value: 130, measuredAt: 1_776_086_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.volatile.baseline.1", runID: "run.volatile.baseline.1", scenarioID: volatileScenario.id, metricID: buildTimeMetric.id, value: 100, measuredAt: 1_776_100_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.volatile.current.1", runID: "run.volatile.current.1", scenarioID: volatileScenario.id, metricID: buildTimeMetric.id, value: 130, measuredAt: 1_776_186_500, tags: [currentTag, smokeTag]),
-        sample(id: "sample.volatile.baseline.2", runID: "run.volatile.baseline.2", scenarioID: volatileScenario.id, metricID: buildTimeMetric.id, value: 92, measuredAt: 1_776_272_900, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.volatile.current.2", runID: "run.volatile.current.2", scenarioID: volatileScenario.id, metricID: buildTimeMetric.id, value: 125, measuredAt: 1_776_359_300, tags: [currentTag, smokeTag]),
-        sample(id: "sample.recovered.baseline.1", runID: "run.recovered.baseline.1", scenarioID: recoveredScenario.id, metricID: buildTimeMetric.id, value: 100, measuredAt: 1_776_445_700, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.recovered.baseline.2", runID: "run.recovered.baseline.2", scenarioID: recoveredScenario.id, metricID: buildTimeMetric.id, value: 135, measuredAt: 1_776_532_100, tags: [baselineTag, smokeTag]),
-        sample(id: "sample.recovered.current", runID: "run.recovered.current", scenarioID: recoveredScenario.id, metricID: buildTimeMetric.id, value: 92, measuredAt: 1_776_618_500, tags: [currentTag, smokeTag])
+        sample(
+            id: "sample.archived.baseline.1",
+            runID: "run.archived.baseline",
+            scenarioID: archivedScenario.id,
+            metricID: latencyMetric.id,
+            value: 140,
+            measuredAt: 1_776_000_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.archived.current.1",
+            runID: "run.archived.current",
+            scenarioID: archivedScenario.id,
+            metricID: latencyMetric.id,
+            value: 130,
+            measuredAt: 1_776_086_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.volatile.baseline.1",
+            runID: "run.volatile.baseline.1",
+            scenarioID: volatileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 100,
+            measuredAt: 1_776_100_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.volatile.current.1",
+            runID: "run.volatile.current.1",
+            scenarioID: volatileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 130,
+            measuredAt: 1_776_186_500,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.volatile.baseline.2",
+            runID: "run.volatile.baseline.2",
+            scenarioID: volatileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 92,
+            measuredAt: 1_776_272_900,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.volatile.current.2",
+            runID: "run.volatile.current.2",
+            scenarioID: volatileScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 125,
+            measuredAt: 1_776_359_300,
+            tags: [currentTag, smokeTag]
+        ),
+        sample(
+            id: "sample.recovered.baseline.1",
+            runID: "run.recovered.baseline.1",
+            scenarioID: recoveredScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 100,
+            measuredAt: 1_776_445_700,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.recovered.baseline.2",
+            runID: "run.recovered.baseline.2",
+            scenarioID: recoveredScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 135,
+            measuredAt: 1_776_532_100,
+            tags: [baselineTag, smokeTag]
+        ),
+        sample(
+            id: "sample.recovered.current",
+            runID: "run.recovered.current",
+            scenarioID: recoveredScenario.id,
+            metricID: buildTimeMetric.id,
+            value: 92,
+            measuredAt: 1_776_618_500,
+            tags: [currentTag, smokeTag]
+        )
     ]
 
     static let launchOptimizationNote = BenchmarkPerformanceChangeNote(
@@ -659,7 +956,7 @@ private extension BenchmarkDashboardDemoData {
             outputDurationSeconds: 12.5,
             outputFrameRate: 30,
             outputContainer: .mp4,
-            outputBitrateKbps: 8_000,
+            outputBitrateKbps: 8000,
             samplingProfile: samplingProfile
         )
 

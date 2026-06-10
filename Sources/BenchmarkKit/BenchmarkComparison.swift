@@ -384,10 +384,11 @@ public struct BenchmarkTrendEvaluator: Sendable {
             return referenceGroupKey.contains(candidateRun)
         }
 
-        guard referenceRun.envelope == nil,
-              candidateRun.envelope == nil,
-              let referenceFingerprint = referenceRun.scenarioFingerprint,
-              let candidateFingerprint = candidateRun.scenarioFingerprint
+        guard
+            referenceRun.envelope == nil,
+            candidateRun.envelope == nil,
+            let referenceFingerprint = referenceRun.scenarioFingerprint,
+            let candidateFingerprint = candidateRun.scenarioFingerprint
         else {
             return candidateRun.id == referenceRun.id
         }
@@ -423,9 +424,10 @@ public struct BenchmarkTrendEvaluator: Sendable {
         from summaries: [BenchmarkComparableRunMetricSummary],
         metric: BenchmarkMetric
     ) -> BenchmarkTrendSummary {
-        guard summaries.count >= 2,
-              let first = summaries.first,
-              let latest = summaries.last
+        guard
+            summaries.count >= 2,
+            let first = summaries.first,
+            let latest = summaries.last
         else {
             return .unavailable(sampleCount: summaries.reduce(0) { $0 + $1.summary.count })
         }
@@ -438,9 +440,10 @@ public struct BenchmarkTrendEvaluator: Sendable {
         to current: BenchmarkComparableRunMetricSummary,
         metric: BenchmarkMetric
     ) -> BenchmarkTrendSummary {
-        guard let baseline,
-              let baselineMean = baseline.summary.mean,
-              let currentMean = current.summary.mean
+        guard
+            let baseline,
+            let baselineMean = baseline.summary.mean,
+            let currentMean = current.summary.mean
         else {
             return .unavailable(sampleCount: (baseline?.summary.count ?? 0) + current.summary.count)
         }
@@ -474,7 +477,7 @@ public struct BenchmarkTrendEvaluator: Sendable {
         let meaningfulDirections = adjacentDirections.filter { direction in
             direction == .improved || direction == .regressed
         }
-        if meaningfulDirections.contains(.improved) && meaningfulDirections.contains(.regressed) {
+        if meaningfulDirections.contains(.improved), meaningfulDirections.contains(.regressed) {
             outcomes.insert(.noisyHistory)
         }
 
@@ -513,13 +516,14 @@ public struct BenchmarkTrendEvaluator: Sendable {
         lastRuns: [BenchmarkComparableRunMetricSummary],
         metric: BenchmarkMetric
     ) -> Bool {
-        guard lastRuns.count >= 3,
-              let current = lastRuns.last,
-              let previous = lastRuns.dropLast().last,
-              let bestOlder = bestSummary(in: Array(lastRuns.dropLast(1)), metric: metric),
-              let currentMean = current.summary.mean,
-              let previousMean = previous.summary.mean,
-              let bestOlderMean = bestOlder.summary.mean
+        guard
+            lastRuns.count >= 3,
+            let current = lastRuns.last,
+            let previous = lastRuns.dropLast().last,
+            let bestOlder = bestSummary(in: Array(lastRuns.dropLast(1)), metric: metric),
+            let currentMean = current.summary.mean,
+            let previousMean = previous.summary.mean,
+            let bestOlderMean = bestOlder.summary.mean
         else {
             return false
         }
@@ -545,7 +549,7 @@ public struct BenchmarkTrendEvaluator: Sendable {
             return .unavailable
         }
 
-        if lastRuns.count >= policy.minimumRunsForHighConfidence && !outcomes.contains(.noisyHistory) {
+        if lastRuns.count >= policy.minimumRunsForHighConfidence, !outcomes.contains(.noisyHistory) {
             return .high
         }
 
@@ -842,13 +846,14 @@ public struct BenchmarkInsightEvaluator: Sendable {
     }
 
     private func makeInsight(from comparison: BenchmarkComparison) -> BenchmarkComparisonInsight? {
-        guard comparison.dataState == .complete,
-              comparison.baseline.count >= policy.minimumSamplesPerSide,
-              comparison.current.count >= policy.minimumSamplesPerSide,
-              let delta = comparison.delta,
-              let percentage = delta.percentage,
-              abs(percentage) >= policy.minimumAbsolutePercentageChange,
-              abs(delta.absolute) >= policy.minimumAbsoluteDelta
+        guard
+            comparison.dataState == .complete,
+            comparison.baseline.count >= policy.minimumSamplesPerSide,
+            comparison.current.count >= policy.minimumSamplesPerSide,
+            let delta = comparison.delta,
+            let percentage = delta.percentage,
+            abs(percentage) >= policy.minimumAbsolutePercentageChange,
+            abs(delta.absolute) >= policy.minimumAbsoluteDelta
         else {
             return nil
         }

@@ -1,7 +1,7 @@
 import BenchmarkKit
 import Foundation
 
-enum BenchmarkComparisonStatus: Hashable, Sendable {
+enum BenchmarkComparisonStatus: Hashable {
     case improved
     case regressed
     case unchanged
@@ -69,7 +69,7 @@ enum BenchmarkComparisonStatus: Hashable, Sendable {
     }
 }
 
-enum BenchmarkComparisonScope: String, Hashable, Sendable {
+enum BenchmarkComparisonScope: String, Hashable {
     case baseline
     case current
 
@@ -83,7 +83,7 @@ enum BenchmarkComparisonScope: String, Hashable, Sendable {
     }
 }
 
-struct BenchmarkMetricHistoryPoint: Identifiable, Hashable, Sendable {
+struct BenchmarkMetricHistoryPoint: Identifiable, Hashable {
     var id: BenchmarkSample.ID
     var scope: BenchmarkComparisonScope
     var value: Double
@@ -103,7 +103,7 @@ struct BenchmarkMetricHistoryPoint: Identifiable, Hashable, Sendable {
     }
 }
 
-struct BenchmarkMetricHistorySeries: Hashable, Sendable {
+struct BenchmarkMetricHistorySeries: Hashable {
     var metric: BenchmarkMetric
     var points: [BenchmarkMetricHistoryPoint]
 
@@ -118,7 +118,7 @@ struct BenchmarkMetricHistorySeries: Hashable, Sendable {
     }
 }
 
-struct BenchmarkRunMatrixContext: Identifiable, Hashable, Sendable {
+struct BenchmarkRunMatrixContext: Identifiable, Hashable {
     var id: String {
         "\(scope.rawValue)-\(runID.rawValue)"
     }
@@ -131,7 +131,7 @@ struct BenchmarkRunMatrixContext: Identifiable, Hashable, Sendable {
     var summary: String
 }
 
-enum BenchmarkComparisonConfidenceLevel: Hashable, Sendable {
+enum BenchmarkComparisonConfidenceLevel: Hashable {
     case high
     case medium
     case low
@@ -151,13 +151,13 @@ enum BenchmarkComparisonConfidenceLevel: Hashable, Sendable {
     }
 }
 
-struct BenchmarkComparisonConfidence: Hashable, Sendable {
+struct BenchmarkComparisonConfidence: Hashable {
     var level: BenchmarkComparisonConfidenceLevel
     var summary: String
 }
 
-struct BenchmarkComparisonRow: Identifiable, Hashable, Sendable {
-    struct ID: Hashable, Sendable {
+struct BenchmarkComparisonRow: Identifiable, Hashable {
+    struct ID: Hashable {
         var suiteID: BenchmarkSuite.ID
         var scenarioID: BenchmarkScenario.ID
         var metricID: BenchmarkMetric.ID
@@ -180,14 +180,14 @@ struct BenchmarkComparisonRow: Identifiable, Hashable, Sendable {
     var confidence: BenchmarkComparisonConfidence
     var notes: [String]
     var latestRunStartedAt: Date?
-    var insightCard: BenchmarkDashboardInsightCard? = nil
+    var insightCard: BenchmarkDashboardInsightCard?
 
     var totalSamples: Int {
         comparison.baseline.count + comparison.current.count
     }
 }
 
-struct BenchmarkScenarioGroup: Identifiable, Hashable, Sendable {
+struct BenchmarkScenarioGroup: Identifiable, Hashable {
     var id: BenchmarkScenario.ID {
         scenario.id
     }
@@ -198,7 +198,7 @@ struct BenchmarkScenarioGroup: Identifiable, Hashable, Sendable {
     var summary: BenchmarkOverviewSummary
 }
 
-struct BenchmarkRecentScenario: Identifiable, Hashable, Sendable {
+struct BenchmarkRecentScenario: Identifiable, Hashable {
     var id: String {
         "\(suite.id.rawValue)-\(scenario.id.rawValue)"
     }
@@ -210,7 +210,7 @@ struct BenchmarkRecentScenario: Identifiable, Hashable, Sendable {
     var latestRunStartedAt: Date?
 }
 
-struct BenchmarkSuiteGroup: Identifiable, Hashable, Sendable {
+struct BenchmarkSuiteGroup: Identifiable, Hashable {
     var id: BenchmarkSuite.ID {
         suite.id
     }
@@ -220,7 +220,7 @@ struct BenchmarkSuiteGroup: Identifiable, Hashable, Sendable {
     var summary: BenchmarkOverviewSummary
 }
 
-struct BenchmarkComparisonDimensionGroup: Identifiable, Hashable, Sendable {
+struct BenchmarkComparisonDimensionGroup: Identifiable, Hashable {
     var id: BenchmarkComparisonDimension.ID {
         dimension.id
     }
@@ -229,7 +229,7 @@ struct BenchmarkComparisonDimensionGroup: Identifiable, Hashable, Sendable {
     var values: [BenchmarkComparisonDimensionValue]
 }
 
-struct BenchmarkSelectedComparisonDimensionValue: Identifiable, Hashable, Sendable {
+struct BenchmarkSelectedComparisonDimensionValue: Identifiable, Hashable {
     var id: BenchmarkComparisonDimension.ID {
         dimension.id
     }
@@ -245,7 +245,7 @@ struct BenchmarkSelectedComparisonDimensionValue: Identifiable, Hashable, Sendab
     var subtitle: String?
 }
 
-struct BenchmarkDashboardLoadedState: Hashable, Sendable {
+struct BenchmarkDashboardLoadedState: Hashable {
     var rows: [BenchmarkComparisonRow]
     var groups: [BenchmarkSuiteGroup]
     var recentScenarios: [BenchmarkRecentScenario]
@@ -258,7 +258,7 @@ struct BenchmarkDashboardLoadedState: Hashable, Sendable {
     }
 }
 
-enum BenchmarkDashboardLoadState: Hashable, Sendable {
+enum BenchmarkDashboardLoadState: Hashable {
     case idle
     case loading
     case loaded(BenchmarkDashboardLoadedState)

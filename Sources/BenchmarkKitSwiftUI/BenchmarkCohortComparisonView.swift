@@ -132,11 +132,17 @@ private struct BenchmarkCohortDeltaPanel: View {
             ) {
                 BenchmarkValueField(
                     title: "p95 (A)",
-                    value: BenchmarkValueFormatter.value(BenchmarkDistribution(series: row.history).p95, unit: row.metric.unit)
+                    value: BenchmarkValueFormatter.value(
+                        BenchmarkDistribution(series: row.history).p95,
+                        unit: row.metric.unit
+                    )
                 )
                 BenchmarkValueField(
                     title: "p95 (B)",
-                    value: BenchmarkValueFormatter.value(BenchmarkDistribution(series: row.history).p95, unit: row.metric.unit)
+                    value: BenchmarkValueFormatter.value(
+                        BenchmarkDistribution(series: row.history).p95,
+                        unit: row.metric.unit
+                    )
                 )
                 BenchmarkValueField(
                     title: "Δ p95",

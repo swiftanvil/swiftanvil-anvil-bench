@@ -1,7 +1,7 @@
 import BenchmarkKit
 import Foundation
 
-enum BenchmarkDashboardMode: String, CaseIterable, Hashable, Sendable {
+enum BenchmarkDashboardMode: String, CaseIterable, Hashable {
     case summary
     case suites
 
@@ -17,7 +17,7 @@ enum BenchmarkDashboardMode: String, CaseIterable, Hashable, Sendable {
     }
 }
 
-struct BenchmarkDashboardDefaultState: Hashable, Sendable {
+struct BenchmarkDashboardDefaultState: Hashable {
     static let topComparisonLimit = 3
 
     var mode: BenchmarkDashboardMode
@@ -72,8 +72,10 @@ struct BenchmarkDashboardDefaultState: Hashable, Sendable {
     }
 
     private static func primaryTrendSort(_ lhs: BenchmarkComparisonRow, _ rhs: BenchmarkComparisonRow) -> Bool {
-        if lhs.status == .regressed || rhs.status == .regressed,
-           lhs.status != rhs.status {
+        if
+            lhs.status == .regressed || rhs.status == .regressed,
+            lhs.status != rhs.status
+        {
             return lhs.status == .regressed
         }
 
@@ -87,18 +89,18 @@ struct BenchmarkDashboardDefaultState: Hashable, Sendable {
     private static func recencySort(_ lhs: BenchmarkComparisonRow, _ rhs: BenchmarkComparisonRow) -> Bool {
         switch (lhs.latestRunStartedAt, rhs.latestRunStartedAt) {
         case let (lhsDate?, rhsDate?) where lhsDate != rhsDate:
-            return lhsDate > rhsDate
+            lhsDate > rhsDate
         case (nil, _?):
-            return false
+            false
         case (_?, nil):
-            return true
+            true
         default:
-            return lhs.metric.name.localizedStandardCompare(rhs.metric.name) == .orderedAscending
+            lhs.metric.name.localizedStandardCompare(rhs.metric.name) == .orderedAscending
         }
     }
 }
 
-struct BenchmarkOverviewSummary: Hashable, Sendable {
+struct BenchmarkOverviewSummary: Hashable {
     var totalComparisons: Int
     var regressedCount: Int
     var improvedCount: Int
@@ -117,11 +119,11 @@ struct BenchmarkOverviewSummary: Hashable, Sendable {
         insightCards: [BenchmarkDashboardInsightCard]? = nil
     ) {
         totalComparisons = rows.count
-        regressedCount = rows.filter { $0.status == .regressed }.count
-        improvedCount = rows.filter { $0.status == .improved }.count
-        unchangedCount = rows.filter { $0.status == .unchanged }.count
-        missingDataCount = rows.filter { $0.status.isMissingData }.count
-        unavailableCount = rows.filter { $0.status == .unavailable }.count
+        regressedCount = rows.count(where: { $0.status == .regressed })
+        improvedCount = rows.count(where: { $0.status == .improved })
+        unchangedCount = rows.count(where: { $0.status == .unchanged })
+        missingDataCount = rows.count(where: { $0.status.isMissingData })
+        unavailableCount = rows.count(where: { $0.status == .unavailable })
         representedSampleCount = rows.reduce(0) { $0 + $1.totalSamples }
         self.latestRunStartedAt = latestRunStartedAt
         self.archiveSelection = archiveSelection

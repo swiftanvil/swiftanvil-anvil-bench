@@ -1,6 +1,6 @@
 import BenchmarkKit
 
-struct BenchmarkDashboardInsightRunSummary: Identifiable, Hashable, Sendable {
+struct BenchmarkDashboardInsightRunSummary: Identifiable, Hashable {
     var id: BenchmarkRun.ID {
         run.id
     }
@@ -9,8 +9,8 @@ struct BenchmarkDashboardInsightRunSummary: Identifiable, Hashable, Sendable {
     var summary: BenchmarkSampleSummary
 }
 
-struct BenchmarkDashboardInsightCard: Identifiable, Hashable, Sendable {
-    struct ID: Hashable, Sendable {
+struct BenchmarkDashboardInsightCard: Identifiable, Hashable {
+    struct ID: Hashable {
         var suiteID: BenchmarkSuite.ID
         var scenarioID: BenchmarkScenario.ID
         var metricID: BenchmarkMetric.ID

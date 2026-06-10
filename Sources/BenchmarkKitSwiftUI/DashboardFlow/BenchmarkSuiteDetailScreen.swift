@@ -90,13 +90,13 @@ struct BenchmarkSuiteDetailScreen: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .navigationTitle(suiteGroup.suite.name)
-#if os(iOS) || os(tvOS) || os(watchOS)
-        .navigationBarTitleDisplayMode(.inline)
-#endif
-        .task {
-            if selectedScenarioID == nil {
-                selectedScenarioID = suiteGroup.scenarios.first?.scenario.id
+        #if os(iOS) || os(tvOS) || os(watchOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+            .task {
+                if selectedScenarioID == nil {
+                    selectedScenarioID = suiteGroup.scenarios.first?.scenario.id
+                }
             }
-        }
     }
 }

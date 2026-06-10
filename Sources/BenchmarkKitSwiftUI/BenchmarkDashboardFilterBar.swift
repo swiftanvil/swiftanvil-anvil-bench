@@ -56,7 +56,9 @@ struct BenchmarkDashboardFilterBar: View {
             BenchmarkComparisonModeLabel(mode: comparisonMode, isSelected: true)
         }
         .accessibilityLabel("Comparison mode: \(comparisonMode.menuTitle)")
-        .accessibilityHint("Only runs with matching comparable scenario shape, build, and device identity are eligible.")
+        .accessibilityHint(
+            "Only runs with matching comparable scenario shape, build, and device identity are eligible."
+        )
     }
 
     private var advancedFiltersTitle: String {

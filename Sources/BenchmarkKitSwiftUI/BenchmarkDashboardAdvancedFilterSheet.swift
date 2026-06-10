@@ -26,7 +26,9 @@ struct BenchmarkDashboardAdvancedFilterSheet: View {
             } header: {
                 Text("Comparison")
             } footer: {
-                Text("Comparison modes use only comparable scenario shapes so unrelated runs do not share a trend window.")
+                Text(
+                    "Comparison modes use only comparable scenario shapes so unrelated runs do not share a trend window."
+                )
             }
 
             Section("History") {
@@ -146,20 +148,20 @@ struct BenchmarkDashboardAdvancedFilterSheet: View {
             }
         }
         .navigationTitle("Advanced Filters")
-#if os(iOS) || os(tvOS) || os(watchOS)
-        .navigationBarTitleDisplayMode(.inline)
-#endif
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button("Close") {
-                    dismiss()
+        #if os(iOS) || os(tvOS) || os(watchOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .automatic) {
+                    Button("Reset", action: resetFilters)
                 }
             }
-
-            ToolbarItem(placement: .automatic) {
-                Button("Reset", action: resetFilters)
-            }
-        }
     }
 
     private var hasScenarioOptions: Bool {
@@ -169,8 +171,10 @@ struct BenchmarkDashboardAdvancedFilterSheet: View {
     private func selectSuite(_ suite: BenchmarkSuite) {
         filters.selectedSuiteID = suite.id
 
-        if let selectedScenarioID = filters.selectedScenarioID,
-           catalog.scenario(withID: selectedScenarioID)?.suiteID != suite.id {
+        if
+            let selectedScenarioID = filters.selectedScenarioID,
+            catalog.scenario(withID: selectedScenarioID)?.suiteID != suite.id
+        {
             filters.selectedScenarioID = nil
         }
     }

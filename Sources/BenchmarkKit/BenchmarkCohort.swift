@@ -5,7 +5,9 @@ import Foundation
 /// Facets are stable string keys backed by `BenchmarkEnvironment` fields and bundled
 /// envelope extras. Hosts compose cohorts in terms of these keys instead of reaching
 /// into the envelope directly.
-public struct BenchmarkEnvelopeFacet: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct BenchmarkEnvelopeFacet: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral,
+    CustomStringConvertible
+{
     /// The persisted facet key.
     public let rawValue: String
 
@@ -25,7 +27,9 @@ public struct BenchmarkEnvelopeFacet: RawRepresentable, Hashable, Codable, Senda
     }
 
     /// A human-readable representation of the facet.
-    public var description: String { rawValue }
+    public var description: String {
+        rawValue
+    }
 
     /// The device hardware model identifier (`BenchmarkEnvironment.deviceModel`).
     public static let deviceModel: Self = "environment.deviceModel"
@@ -263,22 +267,25 @@ public struct BenchmarkComparableRunGroup: Hashable, Sendable {
 
 // MARK: - Query helpers
 
-extension BenchmarkRunQuery {
+public extension BenchmarkRunQuery {
     /// Returns a copy of the query refined by a cohort filter.
     ///
     /// The cohort's required tag IDs are added to `tagIDs`. Other cohort clauses
     /// (title hash, envelope facets, exclusions) cannot be expressed in the base
     /// query and must be applied by the caller via `BenchmarkCohort.contains(_:)`.
-    public func refined(by cohort: BenchmarkCohort) -> BenchmarkRunQuery {
+    func refined(by cohort: BenchmarkCohort) -> BenchmarkRunQuery {
         var copy = self
         copy.tagIDs.formUnion(cohort.filter.requiredTagIDs)
         return copy
     }
 }
 
-extension BenchmarkHistoryDataSource {
+public extension BenchmarkHistoryDataSource {
     /// Loads the runs in a cohort.
-    public func runs(in cohort: BenchmarkCohort, baseQuery: BenchmarkRunQuery = BenchmarkRunQuery()) async throws -> [BenchmarkRun] {
+    func runs(
+        in cohort: BenchmarkCohort,
+        baseQuery: BenchmarkRunQuery = BenchmarkRunQuery()
+    ) async throws -> [BenchmarkRun] {
         let candidates = try await runs(matching: baseQuery.refined(by: cohort))
         return candidates.filter(cohort.contains)
     }
@@ -288,7 +295,13 @@ extension BenchmarkHistoryDataSource {
     /// Cohorts are not assumed to be disjoint; a run that matches two cohorts will
     /// appear in both groups, which is the contract the dashboard's "Compare cohorts"
     /// affordance relies on.
-    public func runs(grouping cohorts: [BenchmarkCohort], baseQuery: BenchmarkRunQuery = BenchmarkRunQuery()) async throws -> [(cohort: BenchmarkCohort, runs: [BenchmarkRun])] {
+    func runs(
+        grouping cohorts: [BenchmarkCohort],
+        baseQuery: BenchmarkRunQuery = BenchmarkRunQuery()
+    ) async throws -> [(
+        cohort: BenchmarkCohort,
+        runs: [BenchmarkRun]
+    )] {
         var result: [(cohort: BenchmarkCohort, runs: [BenchmarkRun])] = []
         result.reserveCapacity(cohorts.count)
         for cohort in cohorts {
@@ -302,7 +315,9 @@ extension BenchmarkHistoryDataSource {
     ///
     /// Runs missing a scenario fingerprint, bundle build number, or device model
     /// are excluded because they cannot be safely compared with other history.
-    public func comparableRunGroups(matching query: BenchmarkRunQuery = BenchmarkRunQuery()) async throws -> [BenchmarkComparableRunGroup] {
+    func comparableRunGroups(matching query: BenchmarkRunQuery = BenchmarkRunQuery()) async throws
+        -> [BenchmarkComparableRunGroup]
+    {
         let candidateRuns = try await runs(matching: query)
         let runsByKey = Dictionary(grouping: candidateRuns) { run in
             BenchmarkComparableRunGroupKey(run: run)
@@ -325,7 +340,10 @@ extension BenchmarkHistoryDataSource {
     }
 
     /// Loads runs that belong to a comparable trend bucket.
-    public func runs(inComparableGroup key: BenchmarkComparableRunGroupKey, baseQuery: BenchmarkRunQuery = BenchmarkRunQuery()) async throws -> [BenchmarkRun] {
+    func runs(
+        inComparableGroup key: BenchmarkComparableRunGroupKey,
+        baseQuery: BenchmarkRunQuery = BenchmarkRunQuery()
+    ) async throws -> [BenchmarkRun] {
         let candidateRuns = try await runs(matching: baseQuery)
         return candidateRuns
             .filter(key.contains)

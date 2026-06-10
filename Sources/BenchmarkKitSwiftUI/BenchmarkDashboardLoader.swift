@@ -1,7 +1,7 @@
 import BenchmarkKit
 import Foundation
 
-struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: Sendable {
+struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource> {
     var catalog: BenchmarkDashboardCatalog
     var presentation: BenchmarkDashboardPresentation
     var historyDataSource: HistoryDataSource
@@ -93,8 +93,10 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
             return [selectedSuiteID]
         }
 
-        if let selectedScenarioID = filters.selectedScenarioID,
-           let scenario = catalog.scenario(withID: selectedScenarioID) {
+        if
+            let selectedScenarioID = filters.selectedScenarioID,
+            let scenario = catalog.scenario(withID: selectedScenarioID)
+        {
             return [scenario.suiteID]
         }
 
@@ -168,7 +170,8 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
             return runs
         }
 
-        return runs.filter { comparisonDimensionMatches(filters.selectedComparisonDimensionValues, metadata: $0.metadata) }
+        return runs
+            .filter { comparisonDimensionMatches(filters.selectedComparisonDimensionValues, metadata: $0.metadata) }
     }
 
     private func applyComparisonDimensionFilters(
@@ -200,14 +203,18 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
     }
 
     private func filteredSuites(for filters: BenchmarkDashboardFilterState) -> [BenchmarkSuite] {
-        if let selectedSuiteID = filters.selectedSuiteID,
-           let suite = catalog.suite(withID: selectedSuiteID) {
+        if
+            let selectedSuiteID = filters.selectedSuiteID,
+            let suite = catalog.suite(withID: selectedSuiteID)
+        {
             return [suite]
         }
 
-        if let selectedScenarioID = filters.selectedScenarioID,
-           let scenario = catalog.scenario(withID: selectedScenarioID),
-           let suite = catalog.suite(withID: scenario.suiteID) {
+        if
+            let selectedScenarioID = filters.selectedScenarioID,
+            let scenario = catalog.scenario(withID: selectedScenarioID),
+            let suite = catalog.suite(withID: scenario.suiteID)
+        {
             return [suite]
         }
 
@@ -218,8 +225,10 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
         for scenario: BenchmarkScenario,
         filters: BenchmarkDashboardFilterState
     ) -> [BenchmarkMetric] {
-        if let selectedMetricID = filters.selectedMetricID,
-           let metric = catalog.metric(withID: selectedMetricID) {
+        if
+            let selectedMetricID = filters.selectedMetricID,
+            let metric = catalog.metric(withID: selectedMetricID)
+        {
             return [metric]
         }
 
@@ -384,7 +393,12 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
     ) -> BenchmarkMetricHistorySeries {
         BenchmarkMetricHistorySeries(
             metric: metric,
-            points: historyPoints(samples: baselineSamples, scope: .baseline, runsByID: runsByID, dimensions: dimensions) +
+            points: historyPoints(
+                samples: baselineSamples,
+                scope: .baseline,
+                runsByID: runsByID,
+                dimensions: dimensions
+            ) +
                 historyPoints(samples: currentSamples, scope: .current, runsByID: runsByID, dimensions: dimensions)
         )
     }
@@ -519,11 +533,11 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
             notes.append("Missing baseline and current")
         }
 
-        if comparison.baseline.count > 0 && comparison.baseline.count < presentation.lowSampleThreshold {
+        if comparison.baseline.count > 0, comparison.baseline.count < presentation.lowSampleThreshold {
             notes.append("Low baseline samples")
         }
 
-        if comparison.current.count > 0 && comparison.current.count < presentation.lowSampleThreshold {
+        if comparison.current.count > 0, comparison.current.count < presentation.lowSampleThreshold {
             notes.append("Low current samples")
         }
 
@@ -531,11 +545,11 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
             notes.append("Neutral metric")
         }
 
-        if comparison.delta?.percentage == nil && comparison.delta != nil {
+        if comparison.delta?.percentage == nil, comparison.delta != nil {
             notes.append("No percent delta")
         }
 
-        if trend.direction == .unavailable && trend.sampleCount < 2 {
+        if trend.direction == .unavailable, trend.sampleCount < 2 {
             notes.append("Trend needs at least two samples")
         }
 
@@ -577,9 +591,9 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
             .sorted { lhs, rhs in
                 switch (lhs.summary.latestRunStartedAt, rhs.summary.latestRunStartedAt) {
                 case let (lhsDate?, rhsDate?) where lhsDate != rhsDate:
-                    return lhsDate > rhsDate
+                    lhsDate > rhsDate
                 default:
-                    return lhs.scenario.name.localizedStandardCompare(rhs.scenario.name) == .orderedAscending
+                    lhs.scenario.name.localizedStandardCompare(rhs.scenario.name) == .orderedAscending
                 }
             }
 
@@ -596,9 +610,9 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
         .sorted { lhs, rhs in
             switch (lhs.summary.latestRunStartedAt, rhs.summary.latestRunStartedAt) {
             case let (lhsDate?, rhsDate?) where lhsDate != rhsDate:
-                return lhsDate > rhsDate
+                lhsDate > rhsDate
             default:
-                return lhs.suite.name.localizedStandardCompare(rhs.suite.name) == .orderedAscending
+                lhs.suite.name.localizedStandardCompare(rhs.suite.name) == .orderedAscending
             }
         }
     }
@@ -619,9 +633,9 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
             .sorted { lhs, rhs in
                 switch (lhs.latestRunStartedAt, rhs.latestRunStartedAt) {
                 case let (lhsDate?, rhsDate?) where lhsDate != rhsDate:
-                    return lhsDate > rhsDate
+                    lhsDate > rhsDate
                 default:
-                    return lhs.scenario.name.localizedStandardCompare(rhs.scenario.name) == .orderedAscending
+                    lhs.scenario.name.localizedStandardCompare(rhs.scenario.name) == .orderedAscending
                 }
             }
             .prefix(3)
@@ -694,7 +708,8 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
         }
 
         let orderedValues = groupedValues.values.sorted { lhs, rhs in
-            comparisonDimensionSignature(for: lhs).localizedStandardCompare(comparisonDimensionSignature(for: rhs)) == .orderedAscending
+            comparisonDimensionSignature(for: lhs)
+                .localizedStandardCompare(comparisonDimensionSignature(for: rhs)) == .orderedAscending
         }
 
         return orderedValues.enumerated().map { index, metadata in
@@ -723,9 +738,9 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
     ) -> String {
         switch dimension.kind {
         case .singleKey:
-            return metadata[dimension.keys.first?.rawValue ?? ""] ?? dimension.title
+            metadata[dimension.keys.first?.rawValue ?? ""] ?? dimension.title
         case .identity:
-            return "\(dimension.title) \(String(format: "%03d", index + 1))"
+            "\(dimension.title) \(String(format: "%03d", index + 1))"
         }
     }
 
@@ -769,7 +784,7 @@ struct BenchmarkDashboardLoader<HistoryDataSource: BenchmarkHistoryDataSource>: 
     }
 }
 
-private extension Optional where Wrapped == BenchmarkDateRange {
+private extension BenchmarkDateRange? {
     func intersection(with other: BenchmarkDateRange?) -> BenchmarkDateRange? {
         switch (self, other) {
         case (nil, nil):

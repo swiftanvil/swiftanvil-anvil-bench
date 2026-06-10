@@ -24,7 +24,8 @@ public struct BenchmarkDashboard<HistoryDataSource: BenchmarkHistoryDataSource>:
         self.presentation = presentation
         self.historyDataSource = historyDataSource
         self.resetHistoryAction = resetHistoryAction
-        _filters = State(initialValue: BenchmarkDashboardFilterState(initialArchiveFilter: presentation.initialArchiveFilter))
+        _filters =
+            State(initialValue: BenchmarkDashboardFilterState(initialArchiveFilter: presentation.initialArchiveFilter))
     }
 
     public var body: some View {
@@ -61,9 +62,9 @@ public struct BenchmarkDashboard<HistoryDataSource: BenchmarkHistoryDataSource>:
                 await load()
             }
         }
-#if os(iOS) || os(tvOS) || os(watchOS)
+        #if os(iOS) || os(tvOS) || os(watchOS)
         .navigationBarTitleDisplayMode(.inline)
-#endif
+        #endif
     }
 
     private var rowsForNavigation: [BenchmarkComparisonRow] {
@@ -98,9 +99,11 @@ public struct BenchmarkDashboard<HistoryDataSource: BenchmarkHistoryDataSource>:
     }
 
     private static func errorMessage(for error: Error) -> String {
-        if let localizedError = error as? LocalizedError,
-           let errorDescription = localizedError.errorDescription,
-           !errorDescription.isEmpty {
+        if
+            let localizedError = error as? LocalizedError,
+            let errorDescription = localizedError.errorDescription,
+            !errorDescription.isEmpty
+        {
             return errorDescription
         }
 

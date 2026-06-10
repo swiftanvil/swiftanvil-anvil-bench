@@ -10,9 +10,9 @@ enum BenchmarkExportFormatter {
         let header = "Benchmark comparison export"
         let overview = [
             "Comparisons: \(rows.count)",
-            "Improved: \(rows.filter { $0.status == .improved }.count)",
-            "Regressed: \(rows.filter { $0.status == .regressed }.count)",
-            "Missing data: \(rows.filter { $0.status.isMissingData }.count)"
+            "Improved: \(rows.count(where: { $0.status == .improved }))",
+            "Regressed: \(rows.count(where: { $0.status == .regressed }))",
+            "Missing data: \(rows.count(where: { $0.status.isMissingData }))"
         ]
         .joined(separator: "\n")
         let rowSummaries = rows.map(summaryLine(for:)).joined(separator: "\n\n")
@@ -234,15 +234,19 @@ enum BenchmarkExportFormatter {
             parts.append(deviceModel)
         }
 
-        if compact == false,
-           let cpuClass = metadata[BenchmarkEnvironmentMetadataKey.cpuClass],
-           cpuClass.isEmpty == false {
+        if
+            compact == false,
+            let cpuClass = metadata[BenchmarkEnvironmentMetadataKey.cpuClass],
+            cpuClass.isEmpty == false
+        {
             parts.append(cpuClass)
         }
 
-        if compact == false,
-           let totalPhysicalMemoryBytes = metadata[BenchmarkEnvironmentMetadataKey.totalPhysicalMemoryBytes],
-           let bytes = Double(totalPhysicalMemoryBytes) {
+        if
+            compact == false,
+            let totalPhysicalMemoryBytes = metadata[BenchmarkEnvironmentMetadataKey.totalPhysicalMemoryBytes],
+            let bytes = Double(totalPhysicalMemoryBytes)
+        {
             parts.append(BenchmarkValueFormatter.value(bytes, unit: .bytes))
         }
 
@@ -264,15 +268,19 @@ enum BenchmarkExportFormatter {
             parts.append(scheme)
         }
 
-        if compact == false,
-           let localeIdentifier = metadata[BenchmarkEnvironmentMetadataKey.localeIdentifier],
-           localeIdentifier.isEmpty == false {
+        if
+            compact == false,
+            let localeIdentifier = metadata[BenchmarkEnvironmentMetadataKey.localeIdentifier],
+            localeIdentifier.isEmpty == false
+        {
             parts.append("locale \(localeIdentifier)")
         }
 
-        if compact == false,
-           let timeZoneIdentifier = metadata[BenchmarkEnvironmentMetadataKey.timeZoneIdentifier],
-           timeZoneIdentifier.isEmpty == false {
+        if
+            compact == false,
+            let timeZoneIdentifier = metadata[BenchmarkEnvironmentMetadataKey.timeZoneIdentifier],
+            timeZoneIdentifier.isEmpty == false
+        {
             parts.append("tz \(timeZoneIdentifier)")
         }
 
@@ -288,8 +296,10 @@ enum BenchmarkExportFormatter {
     }
 
     private static func osSummary(from metadata: [String: String]) -> String? {
-        let version = metadata[BenchmarkEnvironmentMetadataKey.osVersion]?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let buildNumber = metadata[BenchmarkEnvironmentMetadataKey.osBuildNumber]?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let version = metadata[BenchmarkEnvironmentMetadataKey.osVersion]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let buildNumber = metadata[BenchmarkEnvironmentMetadataKey.osBuildNumber]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
 
         switch (version?.isEmpty == false ? version : nil, buildNumber?.isEmpty == false ? buildNumber : nil) {
         case let (version?, buildNumber?):
@@ -304,10 +314,15 @@ enum BenchmarkExportFormatter {
     }
 
     private static func buildSummary(from metadata: [String: String]) -> String? {
-        let shortVersion = metadata[BenchmarkEnvironmentMetadataKey.bundleShortVersion]?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let buildNumber = metadata[BenchmarkEnvironmentMetadataKey.bundleBuildNumber]?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let shortVersion = metadata[BenchmarkEnvironmentMetadataKey.bundleShortVersion]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let buildNumber = metadata[BenchmarkEnvironmentMetadataKey.bundleBuildNumber]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
 
-        switch (shortVersion?.isEmpty == false ? shortVersion : nil, buildNumber?.isEmpty == false ? buildNumber : nil) {
+        switch (
+            shortVersion?.isEmpty == false ? shortVersion : nil,
+            buildNumber?.isEmpty == false ? buildNumber : nil
+        ) {
         case let (shortVersion?, buildNumber?):
             return "\(shortVersion) (\(buildNumber))"
         case let (shortVersion?, nil):

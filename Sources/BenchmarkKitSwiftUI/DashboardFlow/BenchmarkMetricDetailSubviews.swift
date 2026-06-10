@@ -2,7 +2,7 @@ import BenchmarkKit
 import SwiftUI
 
 #if canImport(Charts)
-import Charts
+    import Charts
 #endif
 
 struct BenchmarkMetricKeyNumbersRow: View {
@@ -11,12 +11,27 @@ struct BenchmarkMetricKeyNumbersRow: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                BenchmarkDetailNumberCard(title: "Baseline", value: BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit))
-                BenchmarkDetailNumberCard(title: "Current", value: BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit))
-                BenchmarkDetailNumberCard(title: "Delta", value: BenchmarkValueFormatter.absoluteDelta(row.comparison.delta, unit: row.metric.unit))
-                BenchmarkDetailNumberCard(title: "Change", value: BenchmarkValueFormatter.percent(row.comparison.delta?.percentage))
+                BenchmarkDetailNumberCard(
+                    title: "Baseline",
+                    value: BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit)
+                )
+                BenchmarkDetailNumberCard(
+                    title: "Current",
+                    value: BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit)
+                )
+                BenchmarkDetailNumberCard(
+                    title: "Delta",
+                    value: BenchmarkValueFormatter.absoluteDelta(row.comparison.delta, unit: row.metric.unit)
+                )
+                BenchmarkDetailNumberCard(
+                    title: "Change",
+                    value: BenchmarkValueFormatter.percent(row.comparison.delta?.percentage)
+                )
                 BenchmarkDetailNumberCard(title: "Samples", value: "\(row.comparison.current.count)")
-                BenchmarkDetailNumberCard(title: "Latest Run", value: row.latestRunStartedAt.map(BenchmarkValueFormatter.date) ?? "Unavailable")
+                BenchmarkDetailNumberCard(
+                    title: "Latest Run",
+                    value: row.latestRunStartedAt.map(BenchmarkValueFormatter.date) ?? "Unavailable"
+                )
             }
             .padding(.horizontal, 1)
         }
@@ -58,29 +73,29 @@ struct BenchmarkMetricSparkline: View {
 
     var body: some View {
         #if canImport(Charts)
-        Chart {
-            ForEach(points) { point in
-                LineMark(
-                    x: .value("Measured", point.measuredAt),
-                    y: .value("Value", point.value)
-                )
-                .foregroundStyle(by: .value("Scope", point.scope.title))
+            Chart {
+                ForEach(points) { point in
+                    LineMark(
+                        x: .value("Measured", point.measuredAt),
+                        y: .value("Value", point.value)
+                    )
+                    .foregroundStyle(by: .value("Scope", point.scope.title))
 
-                PointMark(
-                    x: .value("Measured", point.measuredAt),
-                    y: .value("Value", point.value)
-                )
-                .foregroundStyle(by: .value("Scope", point.scope.title))
+                    PointMark(
+                        x: .value("Measured", point.measuredAt),
+                        y: .value("Value", point.value)
+                    )
+                    .foregroundStyle(by: .value("Scope", point.scope.title))
+                }
             }
-        }
-        .chartXAxis(.hidden)
-        .chartYAxis {
-            AxisMarks(position: .leading, values: .automatic(desiredCount: 3))
-        }
-        .chartLegend(.hidden)
-        .frame(height: fixedHeight)
+            .chartXAxis(.hidden)
+            .chartYAxis {
+                AxisMarks(position: .leading, values: .automatic(desiredCount: 3))
+            }
+            .chartLegend(.hidden)
+            .frame(height: fixedHeight)
         #else
-        BenchmarkChartFallbackView(message: "Charts unavailable.")
+            BenchmarkChartFallbackView(message: "Charts unavailable.")
         #endif
     }
 }

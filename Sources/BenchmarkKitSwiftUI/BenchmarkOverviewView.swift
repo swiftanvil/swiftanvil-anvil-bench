@@ -127,7 +127,8 @@ private struct BenchmarkOverviewPriorityCard: View {
     }
 
     private var tint: Color {
-        summary.needsReviewCount == 0 ? BenchmarkStatusStyle.color(for: .unchanged) : BenchmarkStatusStyle.color(for: .regressed)
+        summary.needsReviewCount == 0 ? BenchmarkStatusStyle.color(for: .unchanged) : BenchmarkStatusStyle
+            .color(for: .regressed)
     }
 }
 

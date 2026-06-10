@@ -1,7 +1,9 @@
 import Foundation
 
 /// A stable string-backed identifier scoped to a BenchmarkKit model type.
-public struct BenchmarkID<Owner>: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct BenchmarkID<Owner>: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral,
+    CustomStringConvertible
+{
     /// The persisted identifier value.
     public let rawValue: String
 
@@ -53,7 +55,9 @@ public struct BenchmarkTag: Identifiable, Hashable, Codable, Sendable, Expressib
 ///
 /// Dimensions are intentionally string-backed so app-specific workflows can add
 /// gates and buckets without changing BenchmarkKit's persisted schema.
-public struct BenchmarkScenarioFingerprintDimension: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct BenchmarkScenarioFingerprintDimension: RawRepresentable, Hashable, Codable, Sendable,
+    ExpressibleByStringLiteral, CustomStringConvertible
+{
     /// The persisted dimension key.
     public let rawValue: String
 

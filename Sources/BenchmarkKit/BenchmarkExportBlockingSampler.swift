@@ -37,7 +37,7 @@ public protocol BenchmarkExportBlockingMemorySampleReader: Sendable {
 /// Default reader for export-blocking memory signals.
 public struct DefaultBenchmarkExportBlockingMemorySampleReader: BenchmarkExportBlockingMemorySampleReader {
     /// Creates the default reader.
-    public init() {}
+    public init() { }
 
     public func readSample() -> BenchmarkExportBlockingMemorySample {
         let memory = MachTaskInfo.readMemory()
@@ -161,10 +161,14 @@ public actor BenchmarkExportBlockingSampler {
     }
 
     /// The sampling profile that drives the cadence and retention behavior.
-    public var samplingProfile: BenchmarkSamplingProfile { profile }
+    public var samplingProfile: BenchmarkSamplingProfile {
+        profile
+    }
 
     /// The number of samples currently captured into the running summary.
-    public var sampleCount: Int { summaryAccumulator.sampleCount }
+    public var sampleCount: Int {
+        summaryAccumulator.sampleCount
+    }
 
     /// The retained raw samples. `.light` mode always returns an empty array.
     public var retainedSamples: [BenchmarkExportBlockingMemorySample] {
@@ -175,7 +179,7 @@ public actor BenchmarkExportBlockingSampler {
     public func start() {
         guard samplingTask == nil else { return }
         let interval = profile.samplingInterval
-        let reader = self.reader
+        let reader = reader
         samplingTask = Task { [weak self] in
             while !Task.isCancelled {
                 let sample = reader.readSample()
@@ -203,7 +207,9 @@ public actor BenchmarkExportBlockingSampler {
     }
 
     /// Returns `(summary, rawSamples)` and clears retained state.
-    public func drain() -> (summary: BenchmarkExportBlockingMemorySummary?, samples: [BenchmarkExportBlockingMemorySample]) {
+    public func drain()
+        -> (summary: BenchmarkExportBlockingMemorySummary?, samples: [BenchmarkExportBlockingMemorySample])
+    {
         let summary = summaryAccumulator.snapshot()
         let rawSamples = profile.retainsRawSamples ? samples : []
         samples.removeAll(keepingCapacity: false)
@@ -264,7 +270,7 @@ public enum BenchmarkExportBlockingSamplerBenchmark {
     /// an empty loop baseline. Use the reported `intervalDutyCycle` to confirm the sampler stays
     /// well below the selected cadence budget.
     public static func measureSamplingOverhead(
-        iterations: Int = 1_000,
+        iterations: Int = 1000,
         profile: BenchmarkSamplingProfile = .deep,
         reader: any BenchmarkExportBlockingMemorySampleReader = DefaultBenchmarkExportBlockingMemorySampleReader()
     ) async -> BenchmarkExportBlockingSamplerOverhead {
@@ -274,11 +280,11 @@ public enum BenchmarkExportBlockingSamplerBenchmark {
         let sampler = BenchmarkExportBlockingSampler(profile: profile, reader: reader)
 
         let baselineStart = clock.now
-        for _ in 0..<iterations {}
+        for _ in 0 ..< iterations { }
         let baselineNanoseconds = nanoseconds(from: baselineStart.duration(to: clock.now))
 
         let sampledStart = clock.now
-        for _ in 0..<iterations {
+        for _ in 0 ..< iterations {
             await sampler.record(reader.readSample())
         }
         let sampledNanoseconds = nanoseconds(from: sampledStart.duration(to: clock.now))
@@ -332,11 +338,10 @@ private struct SummaryAccumulator {
 
     func snapshot() -> BenchmarkExportBlockingMemorySummary? {
         guard sampleCount > 0 else { return nil }
-        let averageAvailable: Double?
-        if availableSampleCount > 0 {
-            averageAvailable = availableTotalBytes / Double(availableSampleCount)
+        let averageAvailable: Double? = if availableSampleCount > 0 {
+            availableTotalBytes / Double(availableSampleCount)
         } else {
-            averageAvailable = nil
+            nil
         }
 
         return BenchmarkExportBlockingMemorySummary(

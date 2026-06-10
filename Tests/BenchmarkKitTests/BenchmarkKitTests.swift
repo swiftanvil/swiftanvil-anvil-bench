@@ -1,6 +1,6 @@
+import AnvilCore
 import Foundation
 import Testing
-import AnvilCore
 @testable import BenchmarkKit
 
 @Suite("BenchmarkKit primitives")
@@ -171,7 +171,7 @@ struct BenchmarkKitTests {
             baseline: [
                 Fixture.sample(id: "baseline-1", value: 100, measuredAt: 1),
                 Fixture.sample(id: "baseline-2", value: 100, measuredAt: 2),
-                Fixture.sample(id: "ignored-noise", metricID: "throughput", value: 10_000, measuredAt: 3)
+                Fixture.sample(id: "ignored-noise", metricID: "throughput", value: 10000, measuredAt: 3)
             ],
             current: [
                 Fixture.sample(id: "current-1", value: 116, measuredAt: 4),
@@ -614,7 +614,10 @@ private actor CapturingBenchmarkRecorder: BenchmarkRecorder {
         return run
     }
 
-    func recordSample(_ descriptor: BenchmarkSampleDescriptor, in runID: BenchmarkRun.ID) async throws -> BenchmarkSample {
+    func recordSample(
+        _ descriptor: BenchmarkSampleDescriptor,
+        in runID: BenchmarkRun.ID
+    ) async throws -> BenchmarkSample {
         let sample = BenchmarkSample(
             id: BenchmarkSample.ID("test-sample-\(samples.count + 1)"),
             runID: runID,
@@ -630,7 +633,7 @@ private actor CapturingBenchmarkRecorder: BenchmarkRecorder {
         return sample
     }
 
-    func finishRun(id: BenchmarkRun.ID, endedAt: Date) async throws {
+    func finishRun(id: BenchmarkRun.ID, endedAt _: Date) async throws {
         finishedRuns.append(id)
     }
 }

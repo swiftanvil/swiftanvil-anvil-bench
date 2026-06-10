@@ -96,9 +96,11 @@ private struct BenchmarkDetailHeader: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            Text("Unit: \(BenchmarkValueFormatter.unitLabel(row.metric.unit)) | Direction: \(BenchmarkValueFormatter.direction(row.metric.direction))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text(
+                "Unit: \(BenchmarkValueFormatter.unitLabel(row.metric.unit)) | Direction: \(BenchmarkValueFormatter.direction(row.metric.direction))"
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -112,11 +114,26 @@ private struct BenchmarkDetailNumbers: View {
             BenchmarkSectionHeader(title: "Key Numbers", subtitle: "Text summary for the selected comparison.")
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 10)], alignment: .leading, spacing: 10) {
-                BenchmarkValueField(title: "Baseline Mean", value: BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit))
-                BenchmarkValueField(title: "Current Mean", value: BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit))
-                BenchmarkValueField(title: "Absolute Delta", value: BenchmarkValueFormatter.absoluteDelta(row.comparison.delta, unit: row.metric.unit))
-                BenchmarkValueField(title: "Percent Delta", value: BenchmarkValueFormatter.percent(row.comparison.delta?.percentage))
-                BenchmarkValueField(title: "Latest Run", value: row.latestRunStartedAt.map(BenchmarkValueFormatter.date) ?? "Unavailable")
+                BenchmarkValueField(
+                    title: "Baseline Mean",
+                    value: BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit)
+                )
+                BenchmarkValueField(
+                    title: "Current Mean",
+                    value: BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit)
+                )
+                BenchmarkValueField(
+                    title: "Absolute Delta",
+                    value: BenchmarkValueFormatter.absoluteDelta(row.comparison.delta, unit: row.metric.unit)
+                )
+                BenchmarkValueField(
+                    title: "Percent Delta",
+                    value: BenchmarkValueFormatter.percent(row.comparison.delta?.percentage)
+                )
+                BenchmarkValueField(
+                    title: "Latest Run",
+                    value: row.latestRunStartedAt.map(BenchmarkValueFormatter.date) ?? "Unavailable"
+                )
                 BenchmarkValueField(title: "Trend", value: BenchmarkValueFormatter.trendDirection(row.trend.direction))
             }
         }
@@ -145,19 +162,7 @@ private struct BenchmarkDetailDisclosure<Content: View>: View {
     let title: String
     let subtitle: String
     let systemImage: String
-    let content: Content
-
-    init(
-        title: String,
-        subtitle: String,
-        systemImage: String,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.title = title
-        self.subtitle = subtitle
-        self.systemImage = systemImage
-        self.content = content()
-    }
+    @ViewBuilder let content: Content
 
     var body: some View {
         DisclosureGroup {

@@ -143,9 +143,10 @@ private struct BenchmarkDashboardDebugControlsView: View {
 
     private var currentInsight: BenchmarkDashboardInsight? {
         let evaluator = BenchmarkInsightEvaluator(policy: insightEvaluationPolicy)
-        guard let insight = evaluator.visibleInsight(for: loadedState.rows.map(\.comparison)),
-              let row = loadedState.rows.first(where: { $0.comparison == insight.comparison }),
-              dismissedInsightID != row.id
+        guard
+            let insight = evaluator.visibleInsight(for: loadedState.rows.map(\.comparison)),
+            let row = loadedState.rows.first(where: { $0.comparison == insight.comparison }),
+            dismissedInsightID != row.id
         else {
             return nil
         }
@@ -198,15 +199,18 @@ private struct BenchmarkAuditMetadataSummary: View {
     let row: BenchmarkComparisonRow
 
     private var metadataKeys: [String] {
-        Array(Set(row.matrixContexts.flatMap { $0.metadata.keys }))
+        Array(Set(row.matrixContexts.flatMap(\.metadata.keys)))
             .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Label("\(row.matrixContexts.count) matrix context\(row.matrixContexts.count == 1 ? "" : "s")", systemImage: "tablecells")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Label(
+                "\(row.matrixContexts.count) matrix context\(row.matrixContexts.count == 1 ? "" : "s")",
+                systemImage: "tablecells"
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
 
             if metadataKeys.isEmpty {
                 Text("No metadata keys")

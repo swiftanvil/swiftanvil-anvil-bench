@@ -35,10 +35,10 @@ struct BenchmarkCaptureCoreTests {
     }
 
     @Test("Light sampler keeps summary stats and discards raw samples")
-    func lightSamplerRetention() async throws {
+    func lightSamplerRetention() async {
         let reader = FixedReader.sequence(values: [10, 20, 30, 40, 50])
         let sampler = BenchmarkSystemSampler(profile: .light, reader: reader)
-        for _ in 0..<5 {
+        for _ in 0 ..< 5 {
             await sampler.record(reader.readSample())
         }
         let retained = await sampler.retainedSamples
@@ -49,10 +49,10 @@ struct BenchmarkCaptureCoreTests {
     }
 
     @Test("Deep sampler keeps the raw trace")
-    func deepSamplerRetention() async throws {
+    func deepSamplerRetention() async {
         let reader = FixedReader.sequence(values: [10, 20, 30])
         let sampler = BenchmarkSystemSampler(profile: .deep, reader: reader)
-        for _ in 0..<3 {
+        for _ in 0 ..< 3 {
             await sampler.record(reader.readSample())
         }
         let retained = await sampler.retainedSamples
@@ -88,8 +88,8 @@ struct BenchmarkCaptureCoreTests {
             samples: [
                 BenchmarkSystemSample(
                     measuredAt: Date(timeIntervalSince1970: 1),
-                    residentMemoryBytes: 1_000,
-                    memoryFootprintBytes: 1_200,
+                    residentMemoryBytes: 1000,
+                    memoryFootprintBytes: 1200,
                     cpuUsageFraction: 0.1,
                     thermalState: .nominal,
                     isLowPowerModeEnabled: false
@@ -244,7 +244,7 @@ struct BenchmarkCaptureCoreTests {
             outputDurationSeconds: 12.5,
             outputFrameRate: 30,
             outputContainer: .mp4,
-            outputBitrateKbps: 8_000,
+            outputBitrateKbps: 8000,
             samplingProfile: .deep
         )
 
@@ -402,7 +402,7 @@ struct BenchmarkCaptureCoreTests {
             outputDurationSeconds: 1,
             outputFrameRate: 30,
             outputContainer: .mp4,
-            outputBitrateKbps: 8_000
+            outputBitrateKbps: 8000
         )
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
@@ -417,7 +417,7 @@ struct BenchmarkCaptureCoreTests {
     }
 
     @Test("Light profile sampling adds <2% CPU and <5MB RSS on a synthetic loop")
-    func lightProfileCalibrationBudget() async throws {
+    func lightProfileCalibrationBudget() async {
         // Synthetic scenario: tight CPU loop that runs for a known wall-clock window with and
         // without the .light sampler attached. The cost of sampling must stay inside the budget.
         let workDuration: TimeInterval = 0.4
@@ -432,7 +432,10 @@ struct BenchmarkCaptureCoreTests {
         // normalized to the workload duration. .light is 1 Hz so on a < 1s window we expect 0–1
         // samples; the budget enforces that headroom rather than measuring an exact percentage.
         let overheadFraction = max(0, (measured.elapsedSeconds - baseline.elapsedSeconds) / workDuration)
-        #expect(overheadFraction < 0.02, "Light-mode sampler added \(overheadFraction * 100)% wall-clock overhead (>2%)")
+        #expect(
+            overheadFraction < 0.02,
+            "Light-mode sampler added \(overheadFraction * 100)% wall-clock overhead (>2%)"
+        )
 
         let memoryDelta = Int64(measured.peakResident) - Int64(baseline.peakResident)
         let memoryDeltaMB = Double(max(0, memoryDelta)) / (1024 * 1024)
@@ -497,15 +500,15 @@ struct BenchmarkCaptureCoreTests {
 private struct FixedReader: BenchmarkSystemSampleReader {
     let cpuFraction: Double
 
-    static func sequence(values: [Double]) -> FixedReader {
+    static func sequence(values _: [Double]) -> FixedReader {
         FixedReader(cpuFraction: 0.5)
     }
 
     func readSample() -> BenchmarkSystemSample {
         BenchmarkSystemSample(
             measuredAt: Date(),
-            residentMemoryBytes: 1_000,
-            memoryFootprintBytes: 1_200,
+            residentMemoryBytes: 1000,
+            memoryFootprintBytes: 1200,
             cpuUsageFraction: cpuFraction,
             thermalState: .nominal,
             isLowPowerModeEnabled: false

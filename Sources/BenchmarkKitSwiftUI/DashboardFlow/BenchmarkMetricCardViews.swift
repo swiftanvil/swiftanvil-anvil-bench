@@ -35,7 +35,7 @@ struct BenchmarkScenarioSelectionCard: View {
 
 struct BenchmarkMetricCarouselCard: View {
     let row: BenchmarkComparisonRow
-    var title: String? = nil
+    var title: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -55,7 +55,10 @@ struct BenchmarkMetricCarouselCard: View {
             BenchmarkMetricSparkline(row: row)
 
             HStack {
-                BenchmarkValueField(title: "Delta", value: BenchmarkValueFormatter.delta(row.comparison.delta, unit: row.metric.unit))
+                BenchmarkValueField(
+                    title: "Delta",
+                    value: BenchmarkValueFormatter.delta(row.comparison.delta, unit: row.metric.unit)
+                )
                 BenchmarkValueField(title: "Samples", value: "\(row.comparison.current.count)")
             }
         }
@@ -72,8 +75,8 @@ struct BenchmarkMetricCarouselCard: View {
 
 struct BenchmarkMetricHeroCard: View {
     let row: BenchmarkComparisonRow
-    var title: String? = nil
-    var subtitle: String? = nil
+    var title: String?
+    var subtitle: String?
     var showsContextSubtitle = true
 
     var body: some View {
@@ -94,9 +97,18 @@ struct BenchmarkMetricHeroCard: View {
             }
 
             HStack(spacing: 10) {
-                BenchmarkHeroValueTile(title: "Baseline", value: BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit))
-                BenchmarkHeroValueTile(title: "Current", value: BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit))
-                BenchmarkHeroValueTile(title: "Delta", value: BenchmarkValueFormatter.delta(row.comparison.delta, unit: row.metric.unit))
+                BenchmarkHeroValueTile(
+                    title: "Baseline",
+                    value: BenchmarkValueFormatter.value(row.comparison.baseline.mean, unit: row.metric.unit)
+                )
+                BenchmarkHeroValueTile(
+                    title: "Current",
+                    value: BenchmarkValueFormatter.value(row.comparison.current.mean, unit: row.metric.unit)
+                )
+                BenchmarkHeroValueTile(
+                    title: "Delta",
+                    value: BenchmarkValueFormatter.delta(row.comparison.delta, unit: row.metric.unit)
+                )
             }
 
             BenchmarkMetricSparkline(row: row, fixedHeight: 180)

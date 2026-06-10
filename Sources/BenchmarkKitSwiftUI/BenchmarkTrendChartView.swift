@@ -2,7 +2,7 @@ import BenchmarkKit
 import SwiftUI
 
 #if canImport(Charts)
-import Charts
+    import Charts
 #endif
 
 struct BenchmarkTrendChartView: View {
@@ -32,47 +32,58 @@ struct BenchmarkTrendChartView: View {
     @ViewBuilder
     private var chartContent: some View {
         #if canImport(Charts)
-        Chart {
-            if let baselineMean = row.comparison.baseline.mean {
-                RuleMark(y: .value("Baseline mean", BenchmarkValueFormatter.displayValue(baselineMean, unit: row.metric.unit)))
+            Chart {
+                if let baselineMean = row.comparison.baseline.mean {
+                    RuleMark(y: .value(
+                        "Baseline mean",
+                        BenchmarkValueFormatter.displayValue(baselineMean, unit: row.metric.unit)
+                    ))
                     .foregroundStyle(.secondary.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
-                    .accessibilityLabel("Baseline mean \(BenchmarkValueFormatter.value(baselineMean, unit: row.metric.unit))")
-            }
+                    .accessibilityLabel(
+                        "Baseline mean \(BenchmarkValueFormatter.value(baselineMean, unit: row.metric.unit))"
+                    )
+                }
 
-            ForEach(points) { point in
-                LineMark(
-                    x: .value("Measured", point.measuredAt),
-                    y: .value(row.metric.name, BenchmarkValueFormatter.displayValue(point.value, unit: row.metric.unit))
-                )
-                .foregroundStyle(by: .value("Scope", point.scope.title))
-                .symbol(by: .value("Scope", point.scope.title))
+                ForEach(points) { point in
+                    LineMark(
+                        x: .value("Measured", point.measuredAt),
+                        y: .value(
+                            row.metric.name,
+                            BenchmarkValueFormatter.displayValue(point.value, unit: row.metric.unit)
+                        )
+                    )
+                    .foregroundStyle(by: .value("Scope", point.scope.title))
+                    .symbol(by: .value("Scope", point.scope.title))
 
-                PointMark(
-                    x: .value("Measured", point.measuredAt),
-                    y: .value(row.metric.name, BenchmarkValueFormatter.displayValue(point.value, unit: row.metric.unit))
-                )
-                .foregroundStyle(by: .value("Scope", point.scope.title))
-                .accessibilityLabel(point.accessibilitySummary(unit: row.metric.unit))
+                    PointMark(
+                        x: .value("Measured", point.measuredAt),
+                        y: .value(
+                            row.metric.name,
+                            BenchmarkValueFormatter.displayValue(point.value, unit: row.metric.unit)
+                        )
+                    )
+                    .foregroundStyle(by: .value("Scope", point.scope.title))
+                    .accessibilityLabel(point.accessibilitySummary(unit: row.metric.unit))
+                }
             }
-        }
-        .chartYAxisLabel(BenchmarkValueFormatter.unitLabel(row.metric.unit))
-        .frame(minHeight: 220)
-        .padding(12)
-        .background(.background, in: RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.quaternary)
-        }
-        .transaction { transaction in
-            if reduceMotion {
-                transaction.animation = nil
+            .chartYAxisLabel(BenchmarkValueFormatter.unitLabel(row.metric.unit))
+            .frame(minHeight: 220)
+            .padding(12)
+            .background(.background, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.quaternary)
             }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilitySummary)
+            .transaction { transaction in
+                if reduceMotion {
+                    transaction.animation = nil
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilitySummary)
         #else
-        BenchmarkChartFallbackView(message: accessibilitySummary)
+            BenchmarkChartFallbackView(message: accessibilitySummary)
         #endif
     }
 

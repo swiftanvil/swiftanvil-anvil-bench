@@ -1,7 +1,7 @@
 import BenchmarkKit
 import SwiftUI
 
-enum BenchmarkDashboardComparisonMode: String, CaseIterable, Identifiable, Hashable, Sendable {
+enum BenchmarkDashboardComparisonMode: String, CaseIterable, Identifiable, Hashable {
     case previousComparable
     case bestRecent
     case last3

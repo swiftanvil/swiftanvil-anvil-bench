@@ -360,14 +360,14 @@ public struct BenchmarkExportShapeContext: Hashable, Codable, Sendable {
     }
 }
 
-extension BenchmarkExportShapeContext {
+public extension BenchmarkExportShapeContext {
     /// The stable metadata key used to embed the JSON-encoded context inside a
     /// `BenchmarkRun.metadata` dictionary.
-    public static let metadataKey: String = "benchmark.export.shape"
+    static let metadataKey: String = "benchmark.export.shape"
 
     /// Encodes the context as a stable, sorted-keys JSON string suitable for storage in
     /// `BenchmarkRun.metadata`.
-    public func encodedString() throws -> String {
+    func encodedString() throws -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
         let data = try encoder.encode(self)
@@ -375,7 +375,7 @@ extension BenchmarkExportShapeContext {
     }
 
     /// Decodes a context previously serialized via ``encodedString()``.
-    public static func decoded(from string: String) throws -> BenchmarkExportShapeContext {
+    static func decoded(from string: String) throws -> BenchmarkExportShapeContext {
         let data = Data(string.utf8)
         return try JSONDecoder().decode(BenchmarkExportShapeContext.self, from: data)
     }

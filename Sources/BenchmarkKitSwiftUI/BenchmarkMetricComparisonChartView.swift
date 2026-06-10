@@ -2,7 +2,7 @@ import BenchmarkKit
 import SwiftUI
 
 #if canImport(Charts)
-import Charts
+    import Charts
 #endif
 
 struct BenchmarkMetricComparisonChartView: View {
@@ -40,36 +40,36 @@ struct BenchmarkMetricComparisonChartView: View {
     @ViewBuilder
     private var chartContent: some View {
         #if canImport(Charts)
-        Chart(chartPoints) { point in
-            BarMark(
-                x: .value("Scope", point.scope.title),
-                y: .value(row.metric.name, BenchmarkValueFormatter.displayValue(point.value, unit: row.metric.unit))
-            )
-            .foregroundStyle(by: .value("Scope", point.scope.title))
-            .annotation(position: .top, alignment: .center) {
-                Text(BenchmarkValueFormatter.value(point.value, unit: row.metric.unit))
-                    .font(.caption)
-                    .monospacedDigit()
+            Chart(chartPoints) { point in
+                BarMark(
+                    x: .value("Scope", point.scope.title),
+                    y: .value(row.metric.name, BenchmarkValueFormatter.displayValue(point.value, unit: row.metric.unit))
+                )
+                .foregroundStyle(by: .value("Scope", point.scope.title))
+                .annotation(position: .top, alignment: .center) {
+                    Text(BenchmarkValueFormatter.value(point.value, unit: row.metric.unit))
+                        .font(.caption)
+                        .monospacedDigit()
+                }
+                .accessibilityLabel(point.accessibilityLabel(unit: row.metric.unit))
             }
-            .accessibilityLabel(point.accessibilityLabel(unit: row.metric.unit))
-        }
-        .chartYAxisLabel(BenchmarkValueFormatter.unitLabel(row.metric.unit))
-        .frame(minHeight: 180)
-        .padding(12)
-        .background(.background, in: RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.quaternary)
-        }
-        .transaction { transaction in
-            if reduceMotion {
-                transaction.animation = nil
+            .chartYAxisLabel(BenchmarkValueFormatter.unitLabel(row.metric.unit))
+            .frame(minHeight: 180)
+            .padding(12)
+            .background(.background, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.quaternary)
             }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilitySummary)
+            .transaction { transaction in
+                if reduceMotion {
+                    transaction.animation = nil
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilitySummary)
         #else
-        BenchmarkChartFallbackView(message: accessibilitySummary)
+            BenchmarkChartFallbackView(message: accessibilitySummary)
         #endif
     }
 

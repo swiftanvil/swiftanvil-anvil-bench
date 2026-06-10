@@ -97,7 +97,8 @@ public protocol BenchmarkRecorder: Sendable {
     func startRun(_ descriptor: BenchmarkRunDescriptor) async throws -> BenchmarkRun
 
     /// Records a sample for an existing run and returns the created sample.
-    func recordSample(_ descriptor: BenchmarkSampleDescriptor, in runID: BenchmarkRun.ID) async throws -> BenchmarkSample
+    func recordSample(_ descriptor: BenchmarkSampleDescriptor, in runID: BenchmarkRun.ID) async throws
+        -> BenchmarkSample
 
     /// Finishes an existing run.
     func finishRun(id: BenchmarkRun.ID, endedAt: Date) async throws
@@ -106,7 +107,7 @@ public protocol BenchmarkRecorder: Sendable {
 /// A recorder that accepts calls without storing benchmark history.
 public struct NoOpBenchmarkRecorder: BenchmarkRecorder {
     /// Creates a no-op benchmark recorder.
-    public init() {}
+    public init() { }
 
     /// Starts a run from a descriptor and returns a placeholder run.
     public func startRun(_ descriptor: BenchmarkRunDescriptor) async throws -> BenchmarkRun {
@@ -123,7 +124,10 @@ public struct NoOpBenchmarkRecorder: BenchmarkRecorder {
     }
 
     /// Records a sample for an existing run and returns a placeholder sample.
-    public func recordSample(_ descriptor: BenchmarkSampleDescriptor, in runID: BenchmarkRun.ID) async throws -> BenchmarkSample {
+    public func recordSample(
+        _ descriptor: BenchmarkSampleDescriptor,
+        in runID: BenchmarkRun.ID
+    ) async throws -> BenchmarkSample {
         BenchmarkSample(
             id: BenchmarkSample.ID("noop-sample"),
             runID: runID,
@@ -138,7 +142,7 @@ public struct NoOpBenchmarkRecorder: BenchmarkRecorder {
     }
 
     /// Finishes an existing run without storing a result.
-    public func finishRun(id: BenchmarkRun.ID, endedAt: Date) async throws {}
+    public func finishRun(id _: BenchmarkRun.ID, endedAt _: Date) async throws { }
 }
 
 /// The result of measuring an asynchronous operation.
@@ -159,16 +163,19 @@ public struct BenchmarkMeasurement<Value: Sendable>: Sendable {
 /// A type that can measure asynchronous work.
 public protocol BenchmarkMeasuring: Sendable {
     /// Measures an asynchronous operation and returns its value with elapsed time.
-    func measure<Value: Sendable>(_ operation: @Sendable () async throws -> Value) async throws -> BenchmarkMeasurement<Value>
+    func measure<Value: Sendable>(_ operation: @Sendable () async throws -> Value) async throws
+        -> BenchmarkMeasurement<Value>
 }
 
 /// A measurer that executes operations and reports zero elapsed time.
 public struct NoOpBenchmarkMeasurer: BenchmarkMeasuring {
     /// Creates a no-op benchmark measurer.
-    public init() {}
+    public init() { }
 
     /// Measures an asynchronous operation and returns zero elapsed time.
-    public func measure<Value: Sendable>(_ operation: @Sendable () async throws -> Value) async throws -> BenchmarkMeasurement<Value> {
+    public func measure<Value: Sendable>(_ operation: @Sendable () async throws -> Value) async throws
+        -> BenchmarkMeasurement<Value>
+    {
         let value = try await operation()
         return BenchmarkMeasurement(value: value, elapsedSeconds: 0)
     }
@@ -177,10 +184,12 @@ public struct NoOpBenchmarkMeasurer: BenchmarkMeasuring {
 /// A measurer that uses wall-clock time.
 public struct WallClockBenchmarkMeasurer: BenchmarkMeasuring {
     /// Creates a wall-clock benchmark measurer.
-    public init() {}
+    public init() { }
 
     /// Measures an asynchronous operation using `Date` wall-clock timestamps.
-    public func measure<Value: Sendable>(_ operation: @Sendable () async throws -> Value) async throws -> BenchmarkMeasurement<Value> {
+    public func measure<Value: Sendable>(_ operation: @Sendable () async throws -> Value) async throws
+        -> BenchmarkMeasurement<Value>
+    {
         let start = Date()
         let value = try await operation()
         let end = Date()

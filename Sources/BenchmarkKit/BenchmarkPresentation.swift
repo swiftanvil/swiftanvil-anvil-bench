@@ -1,7 +1,10 @@
 import Foundation
 
 /// A stable key used to build comparison-dimension definitions from metadata fields.
-public struct BenchmarkComparisonDimensionKey: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct BenchmarkComparisonDimensionKey: RawRepresentable, Hashable, Codable, Sendable,
+    ExpressibleByStringLiteral,
+    CustomStringConvertible
+{
     /// The persisted key value.
     public let rawValue: String
 

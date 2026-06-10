@@ -1,12 +1,12 @@
 import Foundation
 #if canImport(Darwin)
-import Darwin
+    import Darwin
 #endif
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 #if canImport(MetricKit)
-import MetricKit
+    import MetricKit
 #endif
 
 /// A type that reads a single `BenchmarkSystemSample` from the running process.
@@ -20,7 +20,7 @@ public protocol BenchmarkSystemSampleReader: Sendable {
 /// The default reader. Uses Mach task info, `os_proc_available_memory`, and `ProcessInfo`.
 public struct DefaultBenchmarkSystemSampleReader: BenchmarkSystemSampleReader {
     /// Creates the default reader.
-    public init() {}
+    public init() { }
 
     public func readSample() -> BenchmarkSystemSample {
         let memory = MachTaskInfo.readMemory()
@@ -41,14 +41,14 @@ public struct DefaultBenchmarkSystemSampleReader: BenchmarkSystemSampleReader {
     }
 }
 
-extension SystemFacts {
+public extension SystemFacts {
     /// Returns headroom in bytes via `os_proc_available_memory` when the symbol is reachable.
-    public static var availableMemory: UInt64? {
+    static var availableMemory: UInt64? {
         #if canImport(UIKit)
-        if #available(iOS 13.0, *) {
-            let value = os_proc_available_memory()
-            return value > 0 ? UInt64(value) : nil
-        }
+            if #available(iOS 13.0, *) {
+                let value = os_proc_available_memory()
+                return value > 0 ? UInt64(value) : nil
+            }
         #endif
         return nil
     }
@@ -58,32 +58,32 @@ extension SystemFacts {
     /// UIKit's `UIDevice` is main-actor-isolated; reading it from a background sampler would
     /// race. We expose the read here and let callers route through `mainActorBatteryLevel()`
     /// when they have a main-actor context. Non-iOS platforms always return `nil`.
-    public static var batteryLevel: Double? {
+    static var batteryLevel: Double? {
         #if canImport(UIKit) && !os(tvOS)
-        if Thread.isMainThread {
-            return MainActor.assumeIsolated { mainActorBatteryLevel() }
-        }
-        return nil
+            if Thread.isMainThread {
+                return MainActor.assumeIsolated { mainActorBatteryLevel() }
+            }
+            return nil
         #else
-        return nil
+            return nil
         #endif
     }
 
     #if canImport(UIKit) && !os(tvOS)
-    /// Main-actor-only battery accessor that enables monitoring on first read.
-    @MainActor
-    public static func mainActorBatteryLevel() -> Double? {
-        let device = UIDevice.current
-        if !device.isBatteryMonitoringEnabled {
-            device.isBatteryMonitoringEnabled = true
+        /// Main-actor-only battery accessor that enables monitoring on first read.
+        @MainActor
+        static func mainActorBatteryLevel() -> Double? {
+            let device = UIDevice.current
+            if !device.isBatteryMonitoringEnabled {
+                device.isBatteryMonitoringEnabled = true
+            }
+            let level = device.batteryLevel
+            return level < 0 ? nil : Double(level)
         }
-        let level = device.batteryLevel
-        return level < 0 ? nil : Double(level)
-    }
     #endif
 
     /// Free disk bytes for the user's home volume.
-    public static var freeDiskBytes: UInt64? {
+    static var freeDiskBytes: UInt64? {
         let url = URL(fileURLWithPath: NSHomeDirectory())
         let values = try? url.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
         return values?.volumeAvailableCapacityForImportantUsage.map { UInt64($0) }
@@ -111,16 +111,20 @@ public actor BenchmarkSystemSampler {
     }
 
     /// The sampling profile that drives the cadence and retention behavior.
-    public var samplingProfile: BenchmarkSamplingProfile { profile }
+    public var samplingProfile: BenchmarkSamplingProfile {
+        profile
+    }
 
     /// The number of samples currently retained.
-    public var sampleCount: Int { samples.count }
+    public var sampleCount: Int {
+        samples.count
+    }
 
     /// Starts the periodic sampling task. Safe to call multiple times; subsequent calls no-op.
     public func start() {
         guard samplingTask == nil else { return }
         let interval = profile.samplingInterval
-        let reader = self.reader
+        let reader = reader
         samplingTask = Task { [weak self] in
             while !Task.isCancelled {
                 let sample = reader.readSample()
@@ -222,7 +226,7 @@ private struct SummaryAccumulator {
         guard count > 0 else { return [] }
         var rows: [BenchmarkSystemSample] = []
         rows.reserveCapacity(count)
-        for index in 0..<count {
+        for index in 0 ..< count {
             rows.append(
                 BenchmarkSystemSample(
                     measuredAt: lastTimestamp,
@@ -253,52 +257,55 @@ enum MachTaskInfo {
 
     static func readMemory() -> MemoryReading {
         #if canImport(Darwin)
-        var info = task_vm_info_data_t()
-        var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
-        let result = withUnsafeMutablePointer(to: &info) {
-            $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
-                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+            var info = task_vm_info_data_t()
+            var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+            let result = withUnsafeMutablePointer(to: &info) {
+                $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                    task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+                }
             }
-        }
-        guard result == KERN_SUCCESS else { return MemoryReading(resident: 0, footprint: 0) }
-        return MemoryReading(
-            resident: UInt64(info.resident_size),
-            footprint: UInt64(info.phys_footprint)
-        )
+            guard result == KERN_SUCCESS else { return MemoryReading(resident: 0, footprint: 0) }
+            return MemoryReading(
+                resident: UInt64(info.resident_size),
+                footprint: UInt64(info.phys_footprint)
+            )
         #else
-        return MemoryReading(resident: 0, footprint: 0)
+            return MemoryReading(resident: 0, footprint: 0)
         #endif
     }
 
     static func readCPUFraction() -> Double {
         #if canImport(Darwin)
-        var threadList: thread_act_array_t?
-        var threadCount = mach_msg_type_number_t(0)
-        guard task_threads(mach_task_self_, &threadList, &threadCount) == KERN_SUCCESS, let threads = threadList else {
-            return 0
-        }
-        defer {
-            vm_deallocate(
-                mach_task_self_,
-                vm_address_t(UInt(bitPattern: threads)),
-                vm_size_t(Int(threadCount) * MemoryLayout<thread_t>.size)
-            )
-        }
-        var totalUsage: Double = 0
-        for index in 0..<Int(threadCount) {
-            var threadInfo = thread_basic_info()
-            var threadInfoCount = mach_msg_type_number_t(THREAD_INFO_MAX)
-            let result = withUnsafeMutablePointer(to: &threadInfo) {
-                $0.withMemoryRebound(to: integer_t.self, capacity: Int(THREAD_INFO_MAX)) {
-                    thread_info(threads[index], thread_flavor_t(THREAD_BASIC_INFO), $0, &threadInfoCount)
-                }
+            var threadList: thread_act_array_t?
+            var threadCount = mach_msg_type_number_t(0)
+            guard
+                task_threads(mach_task_self_, &threadList, &threadCount) == KERN_SUCCESS,
+                let threads = threadList
+            else {
+                return 0
             }
-            guard result == KERN_SUCCESS, threadInfo.flags & TH_FLAGS_IDLE == 0 else { continue }
-            totalUsage += Double(threadInfo.cpu_usage) / Double(TH_USAGE_SCALE)
-        }
-        return totalUsage
+            defer {
+                vm_deallocate(
+                    mach_task_self_,
+                    vm_address_t(UInt(bitPattern: threads)),
+                    vm_size_t(Int(threadCount) * MemoryLayout<thread_t>.size)
+                )
+            }
+            var totalUsage: Double = 0
+            for index in 0 ..< Int(threadCount) {
+                var threadInfo = thread_basic_info()
+                var threadInfoCount = mach_msg_type_number_t(THREAD_INFO_MAX)
+                let result = withUnsafeMutablePointer(to: &threadInfo) {
+                    $0.withMemoryRebound(to: integer_t.self, capacity: Int(THREAD_INFO_MAX)) {
+                        thread_info(threads[index], thread_flavor_t(THREAD_BASIC_INFO), $0, &threadInfoCount)
+                    }
+                }
+                guard result == KERN_SUCCESS, threadInfo.flags & TH_FLAGS_IDLE == 0 else { continue }
+                totalUsage += Double(threadInfo.cpu_usage) / Double(TH_USAGE_SCALE)
+            }
+            return totalUsage
         #else
-        return 0
+            return 0
         #endif
     }
 }
@@ -312,36 +319,38 @@ enum MachTaskInfo {
 public actor BenchmarkMetricKitBridge {
     private var payloads: [BenchmarkMetricKitPayload] = []
     #if canImport(MetricKit) && os(iOS)
-    private var subscriber: MetricKitSubscriber?
+        private var subscriber: MetricKitSubscriber?
     #endif
 
     /// Creates an idle bridge. Call `start` to subscribe to `MXMetricManager`.
-    public init() {}
+    public init() { }
 
     /// Subscribes to MetricKit deliveries. Idempotent and safe to call on every run.
     public func start() {
         #if canImport(MetricKit) && os(iOS)
-        guard subscriber == nil else { return }
-        let subscriber = MetricKitSubscriber { [weak self] payload in
-            Task { await self?.append(payload) }
-        }
-        self.subscriber = subscriber
-        MXMetricManager.shared.add(subscriber)
+            guard subscriber == nil else { return }
+            let subscriber = MetricKitSubscriber { [weak self] payload in
+                Task { await self?.append(payload) }
+            }
+            self.subscriber = subscriber
+            MXMetricManager.shared.add(subscriber)
         #endif
     }
 
     /// Removes the MetricKit subscription, if any.
     public func stop() {
         #if canImport(MetricKit) && os(iOS)
-        if let subscriber {
-            MXMetricManager.shared.remove(subscriber)
-            self.subscriber = nil
-        }
+            if let subscriber {
+                MXMetricManager.shared.remove(subscriber)
+                self.subscriber = nil
+            }
         #endif
     }
 
     /// All payloads collected since the bridge was created.
-    public var recentPayloads: [BenchmarkMetricKitPayload] { payloads }
+    public var recentPayloads: [BenchmarkMetricKitPayload] {
+        payloads
+    }
 
     /// Inserts a payload directly. Tests use this; the live subscriber path also routes here.
     public func append(_ payload: BenchmarkMetricKitPayload) {
@@ -357,38 +366,38 @@ public actor BenchmarkMetricKitBridge {
 }
 
 #if canImport(MetricKit) && os(iOS)
-private final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber {
-    typealias Handler = @Sendable (BenchmarkMetricKitPayload) -> Void
-    private let handler: Handler
+    private final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber {
+        typealias Handler = @Sendable (BenchmarkMetricKitPayload) -> Void
+        private let handler: Handler
 
-    init(handler: @escaping Handler) {
-        self.handler = handler
-    }
+        init(handler: @escaping Handler) {
+            self.handler = handler
+        }
 
-    func didReceive(_ payloads: [MXMetricPayload]) {
-        for payload in payloads {
-            handler(
-                BenchmarkMetricKitPayload(
-                    kind: .metric,
-                    timeStampBegin: payload.timeStampBegin,
-                    timeStampEnd: payload.timeStampEnd,
-                    jsonData: payload.jsonRepresentation()
+        func didReceive(_ payloads: [MXMetricPayload]) {
+            for payload in payloads {
+                handler(
+                    BenchmarkMetricKitPayload(
+                        kind: .metric,
+                        timeStampBegin: payload.timeStampBegin,
+                        timeStampEnd: payload.timeStampEnd,
+                        jsonData: payload.jsonRepresentation()
+                    )
                 )
-            )
+            }
+        }
+
+        func didReceive(_ payloads: [MXDiagnosticPayload]) {
+            for payload in payloads {
+                handler(
+                    BenchmarkMetricKitPayload(
+                        kind: .diagnostic,
+                        timeStampBegin: payload.timeStampBegin,
+                        timeStampEnd: payload.timeStampEnd,
+                        jsonData: payload.jsonRepresentation()
+                    )
+                )
+            }
         }
     }
-
-    func didReceive(_ payloads: [MXDiagnosticPayload]) {
-        for payload in payloads {
-            handler(
-                BenchmarkMetricKitPayload(
-                    kind: .diagnostic,
-                    timeStampBegin: payload.timeStampBegin,
-                    timeStampEnd: payload.timeStampEnd,
-                    jsonData: payload.jsonRepresentation()
-                )
-            )
-        }
-    }
-}
 #endif

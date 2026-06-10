@@ -390,8 +390,9 @@ public struct BenchmarkRelatedPerformanceChangeNoteQuery: Hashable, Codable, Sen
     }
 
     private func matchingBuildDistance(for noteBuildNumber: String) -> Int?? {
-        guard let noteBuildNumber = noteBuildNumber.nonEmptyBenchmarkQueryValue,
-              let referenceBuildNumber = referenceBuildNumber.nonEmptyBenchmarkQueryValue
+        guard
+            let noteBuildNumber = noteBuildNumber.nonEmptyBenchmarkQueryValue,
+            let referenceBuildNumber = referenceBuildNumber.nonEmptyBenchmarkQueryValue
         else {
             return nil
         }
@@ -404,7 +405,7 @@ public struct BenchmarkRelatedPerformanceChangeNoteQuery: Hashable, Codable, Sen
         }
 
         let distance = referenceBuild - noteBuild
-        guard distance >= 0 && distance <= maximumBuildDistance else {
+        guard distance >= 0, distance <= maximumBuildDistance else {
             return nil
         }
 
@@ -424,7 +425,7 @@ public struct BenchmarkRelatedPerformanceChangeNoteQuery: Hashable, Codable, Sen
 
         let affectedWorkflow = affectedFingerprint.strictGates.value(for: .workflow)?.nonEmptyBenchmarkQueryValue
         let referenceWorkflow = scenarioFingerprint.strictGates.value(for: .workflow)?.nonEmptyBenchmarkQueryValue
-        if affectedWorkflow != nil && affectedWorkflow == referenceWorkflow {
+        if affectedWorkflow != nil, affectedWorkflow == referenceWorkflow {
             return .workflowFamily
         }
 
@@ -578,8 +579,9 @@ public extension BenchmarkHistoryDataSource {
             before: referenceRun,
             archiveFilter: archiveFilter
         ) { candidateRun in
-            guard candidateRun.envelope == nil,
-                  let candidateFingerprint = candidateRun.scenarioFingerprint
+            guard
+                candidateRun.envelope == nil,
+                let candidateFingerprint = candidateRun.scenarioFingerprint
             else {
                 return false
             }

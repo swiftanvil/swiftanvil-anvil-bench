@@ -2,7 +2,7 @@ import BenchmarkKit
 import SwiftUI
 
 #if canImport(Charts)
-import Charts
+    import Charts
 #endif
 
 /// Distribution histogram with p95 / p99 markers for a metric's captured samples.
@@ -40,56 +40,56 @@ struct BenchmarkDistributionChartView: View {
         let bins = distribution.histogram()
 
         #if canImport(Charts)
-        Chart {
-            ForEach(bins) { bin in
-                BarMark(
-                    x: .value("Bucket", BenchmarkValueFormatter.displayValue(bin.midpoint, unit: metric.unit)),
-                    y: .value("Count", bin.count)
-                )
-                .foregroundStyle(.tint.opacity(0.6))
-                .accessibilityLabel(binAccessibilityLabel(for: bin))
-            }
+            Chart {
+                ForEach(bins) { bin in
+                    BarMark(
+                        x: .value("Bucket", BenchmarkValueFormatter.displayValue(bin.midpoint, unit: metric.unit)),
+                        y: .value("Count", bin.count)
+                    )
+                    .foregroundStyle(.tint.opacity(0.6))
+                    .accessibilityLabel(binAccessibilityLabel(for: bin))
+                }
 
-            if let p95 = distribution.p95 {
-                RuleMark(x: .value("p95", BenchmarkValueFormatter.displayValue(p95, unit: metric.unit)))
-                    .foregroundStyle(.orange)
-                    .lineStyle(StrokeStyle(lineWidth: 2))
-                    .annotation(position: .top, alignment: .leading) {
-                        Text("p95")
-                            .font(.caption2)
-                            .foregroundStyle(.orange)
-                    }
-            }
+                if let p95 = distribution.p95 {
+                    RuleMark(x: .value("p95", BenchmarkValueFormatter.displayValue(p95, unit: metric.unit)))
+                        .foregroundStyle(.orange)
+                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .annotation(position: .top, alignment: .leading) {
+                            Text("p95")
+                                .font(.caption2)
+                                .foregroundStyle(.orange)
+                        }
+                }
 
-            if let p99 = distribution.p99 {
-                RuleMark(x: .value("p99", BenchmarkValueFormatter.displayValue(p99, unit: metric.unit)))
-                    .foregroundStyle(.red)
-                    .lineStyle(StrokeStyle(lineWidth: 2, dash: [4, 4]))
-                    .annotation(position: .top, alignment: .trailing) {
-                        Text("p99")
-                            .font(.caption2)
-                            .foregroundStyle(.red)
-                    }
+                if let p99 = distribution.p99 {
+                    RuleMark(x: .value("p99", BenchmarkValueFormatter.displayValue(p99, unit: metric.unit)))
+                        .foregroundStyle(.red)
+                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [4, 4]))
+                        .annotation(position: .top, alignment: .trailing) {
+                            Text("p99")
+                                .font(.caption2)
+                                .foregroundStyle(.red)
+                        }
+                }
             }
-        }
-        .chartXAxisLabel(BenchmarkValueFormatter.unitLabel(metric.unit))
-        .chartYAxisLabel("count")
-        .frame(minHeight: 200)
-        .padding(12)
-        .background(.background, in: RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(.quaternary)
-        }
-        .transaction { transaction in
-            if reduceMotion {
-                transaction.animation = nil
+            .chartXAxisLabel(BenchmarkValueFormatter.unitLabel(metric.unit))
+            .chartYAxisLabel("count")
+            .frame(minHeight: 200)
+            .padding(12)
+            .background(.background, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.quaternary)
             }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilitySummary)
+            .transaction { transaction in
+                if reduceMotion {
+                    transaction.animation = nil
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilitySummary)
         #else
-        BenchmarkChartFallbackView(message: accessibilitySummary)
+            BenchmarkChartFallbackView(message: accessibilitySummary)
         #endif
     }
 
@@ -103,7 +103,6 @@ struct BenchmarkDistributionChartView: View {
         .font(.caption.monospacedDigit())
     }
 
-    @ViewBuilder
     private var rawValueTable: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Sample size below percentile threshold (\(distribution.count) of 5). Showing raw values.")

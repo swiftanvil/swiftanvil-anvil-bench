@@ -6,7 +6,7 @@ import Foundation
 /// non-SwiftUI surfaces can format values the same way the dashboard does.
 public enum BenchmarkValueFormatter {
     private static let bytesPerMegabyte = 1_048_576.0
-    private static let millisecondsPerSecond = 1_000.0
+    private static let millisecondsPerSecond = 1000.0
 
     /// Formats an optional value with its metric unit.
     public static func value(_ value: Double?, unit: BenchmarkMetricUnit) -> String {
